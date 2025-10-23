@@ -111,7 +111,7 @@ export default function Home() {
             <h2 className="text-lg font-semibold">Resume Information</h2>
             <p className="text-sm text-blue-100">Fill in your details</p>
           </div>
-          <div className="max-h-96 overflow-y-auto">
+          <div className="overflow-y-auto">
             <FormEditor data={resumeData} onDataUpdate={handleDataUpdate} />
           </div>
         </div>
