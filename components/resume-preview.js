@@ -27,13 +27,21 @@ export default function ResumePreview({ data, template = "ats-friendly" }) {
   });
 
   return (
-    <div className="max-w-4xl mx-auto bg-white p-8 sm:p-12 text-slate-900 font-serif print:p-0">
-      {/* Header - Name and Contact */}
+    <div
+      className="max-w-4xl mx-auto bg-white p-8 sm:p-12 text-slate-900 font-serif print:p-0"
+      style={{ lineHeight: "1.25" }}
+    >
       <div className="mb-6 pb-4 border-b-2 border-slate-300">
-        <h1 className="text-3xl sm:text-4xl font-bold mb-2">
+        <h1
+          className="text-2xl sm:text-3xl font-bold mb-2"
+          style={{ fontSize: "24px" }}
+        >
           {data.personalInfo.fullName}
         </h1>
-        <div className="flex flex-wrap gap-2 text-xs sm:text-sm text-slate-700">
+        <div
+          className="flex flex-wrap gap-2 text-xs sm:text-sm text-slate-700"
+          style={{ fontSize: "11px", lineHeight: "1.4" }}
+        >
           {data.personalInfo.phone && <span>{data.personalInfo.phone}</span>}
           {data.personalInfo.phone && data.personalInfo.email && <span>◆</span>}
           {data.personalInfo.email && <span>{data.personalInfo.email}</span>}
@@ -45,65 +53,60 @@ export default function ResumePreview({ data, template = "ats-friendly" }) {
         </div>
       </div>
 
-      {/* Summary */}
       {data.personalInfo.summary && (
-        <div className="mb-6">
-          <h2 className="text-sm font-bold uppercase tracking-wide mb-2 border-b border-slate-300 pb-1">
+        <div className="mb-6" style={{ fontSize: "12px", lineHeight: "1.3" }}>
+          <h2
+            className="text-sm font-bold uppercase tracking-wide mb-2 border-b border-slate-300 pb-1"
+            style={{ fontSize: "14px", fontWeight: "bold" }}
+          >
             Summary
           </h2>
-          <p className="text-sm leading-relaxed text-justify">
+          <p className="leading-relaxed text-justify">
             {data.personalInfo.summary}
           </p>
         </div>
       )}
 
-      {/* Experience */}
       {data.experience && data.experience.length > 0 && (
         <div className="mb-6">
-          <h2 className="text-sm font-bold uppercase tracking-wide mb-3 border-b border-slate-300 pb-1">
+          <h2
+            className="text-sm font-bold uppercase tracking-wide mb-3 border-b border-slate-300 pb-1"
+            style={{ fontSize: "14px", fontWeight: "bold" }}
+          >
             Experience
           </h2>
           <div className="space-y-4">
             {data.experience.map((exp, idx) => (
               <div key={idx}>
                 <div className="flex justify-between items-start mb-1">
-                  <h3 className="font-bold text-sm">{exp.position}</h3>
-                  <span className="text-xs text-slate-600">
+                  <h3 className="font-bold" style={{ fontSize: "13.5px" }}>
+                    {exp.position}
+                  </h3>
+                  <span
+                    className="text-xs text-slate-600"
+                    style={{ fontSize: "11px" }}
+                  >
                     {formatDateRange(exp.startDate, exp.endDate)}
                   </span>
                 </div>
-                <p className="text-xs font-semibold text-slate-700 mb-1">
+                <p
+                  className="text-xs font-semibold text-slate-700 mb-2"
+                  style={{ fontSize: "11.5px" }}
+                >
                   {exp.company}
                 </p>
-                <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                  {exp.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Education */}
-      {data.education && data.education.length > 0 && (
-        <div className="mb-6">
-          <h2 className="text-sm font-bold uppercase tracking-wide mb-3 border-b border-slate-300 pb-1">
-            Education
-          </h2>
-          <div className="space-y-3">
-            {data.education.map((edu, idx) => (
-              <div key={idx}>
-                <div className="flex justify-between items-start mb-1">
-                  <h3 className="font-bold text-sm">{edu.degree}</h3>
-                  <span className="text-xs text-slate-600">
-                    {formatDate(edu.graduationDate)}
-                  </span>
-                </div>
-                <p className="text-xs font-semibold text-slate-700">
-                  {edu.school}
-                </p>
-                {edu.field && (
-                  <p className="text-sm text-slate-700">{edu.field}</p>
+                {(exp.bullets || []).length > 0 && (
+                  <ul
+                    className="leading-relaxed space-y-1"
+                    style={{ fontSize: "12px", lineHeight: "1.3" }}
+                  >
+                    {exp.bullets.map((bullet, bulletIdx) => (
+                      <li key={bulletIdx} className="flex gap-2">
+                        <span className="text-slate-600">•</span>
+                        <span>{bullet}</span>
+                      </li>
+                    ))}
+                  </ul>
                 )}
               </div>
             ))}
@@ -111,26 +114,83 @@ export default function ResumePreview({ data, template = "ats-friendly" }) {
         </div>
       )}
 
-      {/* Projects */}
+      {data.education && data.education.length > 0 && (
+        <div className="mb-6">
+          <h2
+            className="text-sm font-bold uppercase tracking-wide mb-3 border-b border-slate-300 pb-1"
+            style={{ fontSize: "14px", fontWeight: "bold" }}
+          >
+            Education
+          </h2>
+          <div className="space-y-3">
+            {data.education.map((edu, idx) => (
+              <div key={idx}>
+                <div className="flex justify-between items-start mb-1">
+                  <h3 className="font-bold" style={{ fontSize: "13.5px" }}>
+                    {edu.degree}
+                  </h3>
+                  <span
+                    className="text-xs text-slate-600"
+                    style={{ fontSize: "11px" }}
+                  >
+                    {formatDate(edu.graduationDate)}
+                  </span>
+                </div>
+                <p
+                  className="text-xs font-semibold text-slate-700"
+                  style={{ fontSize: "11.5px" }}
+                >
+                  {edu.school}
+                </p>
+                {edu.field && (
+                  <p
+                    className="text-sm text-slate-700"
+                    style={{ fontSize: "12px" }}
+                  >
+                    {edu.field}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {data.projects && data.projects.length > 0 && (
         <div className="mb-6">
-          <h2 className="text-sm font-bold uppercase tracking-wide mb-3 border-b border-slate-300 pb-1">
+          <h2
+            className="text-sm font-bold uppercase tracking-wide mb-3 border-b border-slate-300 pb-1"
+            style={{ fontSize: "14px", fontWeight: "bold" }}
+          >
             Projects
           </h2>
           <div className="space-y-4">
             {data.projects.map((project, idx) => (
               <div key={idx}>
                 <div className="flex justify-between items-start mb-1">
-                  <h3 className="font-bold text-sm">{project.name}</h3>
+                  <h3 className="font-bold" style={{ fontSize: "13.5px" }}>
+                    {project.name}
+                  </h3>
                   {project.link && (
-                    <span className="text-xs text-slate-600">
+                    <span
+                      className="text-xs text-slate-600"
+                      style={{ fontSize: "11px" }}
+                    >
                       {project.link}
                     </span>
                   )}
                 </div>
-                <p className="text-sm leading-relaxed">{project.description}</p>
+                <p
+                  className="leading-relaxed"
+                  style={{ fontSize: "12px", lineHeight: "1.3" }}
+                >
+                  {project.description}
+                </p>
                 {project.technologies && (
-                  <p className="text-xs text-slate-700 mt-1">
+                  <p
+                    className="text-xs text-slate-700 mt-1"
+                    style={{ fontSize: "11px" }}
+                  >
                     <span className="font-semibold">Technologies:</span>{" "}
                     {project.technologies}
                   </p>
@@ -141,19 +201,68 @@ export default function ResumePreview({ data, template = "ats-friendly" }) {
         </div>
       )}
 
-      {/* Skills */}
+      {data.certifications && data.certifications.length > 0 && (
+        <div className="mb-6">
+          <h2
+            className="text-sm font-bold uppercase tracking-wide mb-3 border-b border-slate-300 pb-1"
+            style={{ fontSize: "14px", fontWeight: "bold" }}
+          >
+            Certifications & Achievements
+          </h2>
+          <div className="space-y-2">
+            {data.certifications.map((cert, idx) => (
+              <div key={idx} className="flex justify-between items-start">
+                <div>
+                  <p
+                    className="text-sm font-semibold text-slate-900"
+                    style={{ fontSize: "12.5px" }}
+                  >
+                    {cert.title}
+                  </p>
+                  <p
+                    className="text-xs text-slate-700"
+                    style={{ fontSize: "11px" }}
+                  >
+                    {cert.issuer}
+                  </p>
+                </div>
+                {cert.date && (
+                  <span
+                    className="text-xs text-slate-600"
+                    style={{ fontSize: "11px" }}
+                  >
+                    {formatDate(cert.date)}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {data.skills && data.skills.length > 0 && (
         <div>
-          <h2 className="text-sm font-bold uppercase tracking-wide mb-3 border-b border-slate-300 pb-1">
+          <h2
+            className="text-sm font-bold uppercase tracking-wide mb-3 border-b border-slate-300 pb-1"
+            style={{ fontSize: "14px", fontWeight: "bold" }}
+          >
             Skills
           </h2>
           <div className="space-y-2">
             {Object.entries(skillsByCategory).map(([category, skills]) => (
               <div key={category}>
-                <p className="text-xs font-bold text-slate-900 print:font-bold">
+                <p
+                  className="text-xs font-bold text-slate-900 print:font-bold"
+                  style={{ fontSize: "12px", fontWeight: "bold" }}
+                >
                   {category}
                 </p>
-                <p className="text-sm text-slate-700">{skills.join(", ")}</p>
+                <p
+                  className="text-sm text-slate-700"
+                  style={{ fontSize: "12px" }}
+                >
+                  {skills.join(", ")}
+                </p>
               </div>
             ))}
           </div>

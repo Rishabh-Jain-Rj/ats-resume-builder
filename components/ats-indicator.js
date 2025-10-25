@@ -42,7 +42,7 @@ export default function ATSIndicator({
   if (!showFullDetails) {
     return (
       <div
-        className="bg-white rounded-lg shadow-lg p-6 sticky top-24 cursor-pointer"
+        className="bg-white rounded-lg shadow-lg p-6 top-24 cursor-pointer"
         onClick={() => onOpenDrawer && onOpenDrawer()}
       >
         <div className="mb-6">

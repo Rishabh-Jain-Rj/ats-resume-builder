@@ -1,12 +1,14 @@
-export const downloadResume = (resumeData, theme, fonts, format = "pdf") => {
+export const downloadResume = (resumeData, font, format = "pdf") => {
   const fileName = `${resumeData.personalInfo.fullName || "resume"}`;
 
   if (format === "json") {
     downloadJSON(resumeData, fileName);
   } else if (format === "html") {
-    downloadHTML(resumeData, theme, fonts, fileName);
+    downloadHTML(resumeData, font, fileName);
   } else if (format === "pdf") {
-    downloadPDF(resumeData, theme, fonts, fileName);
+    downloadPDF(resumeData, font, fileName);
+  } else if (format === "text") {
+    downloadText(resumeData, fileName);
   }
 };
 
@@ -22,8 +24,8 @@ const downloadJSON = (data, fileName) => {
   URL.revokeObjectURL(link.href);
 };
 
-const downloadHTML = (resumeData, theme, fonts, fileName) => {
-  const htmlContent = generateHTMLContent(resumeData, theme, fonts);
+const downloadHTML = (resumeData, font, fileName) => {
+  const htmlContent = generateHTMLContent(resumeData, font);
   const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
@@ -34,29 +36,43 @@ const downloadHTML = (resumeData, theme, fonts, fileName) => {
   URL.revokeObjectURL(link.href);
 };
 
-const downloadPDF = (resumeData, theme, fonts, fileName) => {
-  // Create a temporary container
-  const container = document.createElement("div");
-  container.style.position = "absolute";
-  container.style.left = "-9999px";
-  container.style.width = "8.5in";
-  container.style.padding = "0.5in";
-  container.innerHTML = generateHTMLContent(resumeData, theme, fonts);
-  document.body.appendChild(container);
-
-  // Use window.print to generate PDF
+const downloadPDF = (resumeData, font, fileName) => {
+  const htmlContent = generateHTMLContent(resumeData, font);
   const printWindow = window.open("", "", "width=800,height=600");
-  printWindow.document.write(generateHTMLContent(resumeData, theme, fonts));
+  printWindow.document.write(htmlContent);
   printWindow.document.close();
 
   setTimeout(() => {
     printWindow.print();
     printWindow.close();
-    document.body.removeChild(container);
   }, 250);
 };
 
-function generateHTMLContent(resumeData, theme, fonts) {
+const downloadText = (resumeData, fileName) => {
+  const textContent = generateTextContent(resumeData);
+  const blob = new Blob([textContent], { type: "text/plain;charset=utf-8" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `${fileName}.txt`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(link.href);
+};
+
+const getFontFamily = (font) => {
+  const fontMap = {
+    calibri: "'Calibri', 'Segoe UI', sans-serif",
+    arial: "'Arial', sans-serif",
+    helvetica: "'Helvetica', 'Arial', sans-serif",
+    times: "'Times New Roman', serif",
+    georgia: "'Georgia', serif",
+    verdana: "'Verdana', sans-serif",
+  };
+  return fontMap[font] || fontMap.calibri;
+};
+
+function generateHTMLContent(resumeData, font) {
   const formatDate = (dateString) => {
     if (!dateString) return "";
     const [year, month] = dateString.split("-");
@@ -66,6 +82,8 @@ function generateHTMLContent(resumeData, theme, fonts) {
       month: "short",
     });
   };
+
+  const fontFamily = getFontFamily(font);
 
   return `
     <!DOCTYPE html>
@@ -81,13 +99,7 @@ function generateHTMLContent(resumeData, theme, fonts) {
           box-sizing: border-box;
         }
         body {
-          font-family: ${
-            fonts.body === "serif"
-              ? "Georgia, serif"
-              : fonts.body === "monospace"
-              ? "Courier New, monospace"
-              : "Arial, sans-serif"
-          };
+          font-family: ${fontFamily};
           line-height: 1.6;
           color: #333;
           padding: 40px;
@@ -97,7 +109,7 @@ function generateHTMLContent(resumeData, theme, fonts) {
         h1 {
           font-size: 32px;
           margin-bottom: 8px;
-          color: ${theme.primary};
+          color: #1a1a1a;
         }
         h2 {
           font-size: 14px;
@@ -105,18 +117,19 @@ function generateHTMLContent(resumeData, theme, fonts) {
           margin-bottom: 12px;
           text-transform: uppercase;
           letter-spacing: 1px;
-          color: ${theme.primary};
-          border-bottom: 2px solid ${theme.accent};
+          color: #1a1a1a;
+          border-bottom: 2px solid #333;
           padding-bottom: 8px;
+          font-weight: bold;
         }
         .header {
           margin-bottom: 24px;
-          border-bottom: 2px solid ${theme.accent};
+          border-bottom: 2px solid #333;
           padding-bottom: 16px;
         }
         .contact {
           font-size: 12px;
-          color: ${theme.accent};
+          color: #555;
           margin-top: 4px;
         }
         .contact span {
@@ -136,22 +149,28 @@ function generateHTMLContent(resumeData, theme, fonts) {
         .entry-title {
           font-weight: bold;
           font-size: 13px;
-          color: ${theme.primary};
+          color: #1a1a1a;
         }
         .entry-subtitle {
           font-size: 12px;
-          color: ${theme.accent};
+          color: #555;
           font-weight: bold;
           margin-top: 2px;
         }
         .entry-date {
           font-size: 11px;
-          color: ${theme.accent};
+          color: #555;
           float: right;
         }
         .entry-description {
           font-size: 12px;
           margin-top: 6px;
+          line-height: 1.5;
+        }
+        .bullet-point {
+          margin-left: 20px;
+          margin-top: 4px;
+          font-size: 12px;
           line-height: 1.5;
         }
         .skills-category {
@@ -160,7 +179,7 @@ function generateHTMLContent(resumeData, theme, fonts) {
         .skills-category-name {
           font-size: 11px;
           font-weight: bold;
-          color: ${theme.accent};
+          color: #1a1a1a;
         }
         .skills-list {
           font-size: 12px;
@@ -217,7 +236,16 @@ function generateHTMLContent(resumeData, theme, fonts) {
                 exp.startDate
               )} - ${formatDate(exp.endDate)}</div>
               <div class="entry-subtitle">${exp.company}</div>
-              <div class="entry-description">${exp.description}</div>
+              ${
+                exp.bullets && exp.bullets.length > 0
+                  ? exp.bullets
+                      .map(
+                        (bullet) =>
+                          `<div class="bullet-point">• ${bullet}</div>`
+                      )
+                      .join("")
+                  : ""
+              }
             </div>
           `
             )
@@ -279,6 +307,27 @@ function generateHTMLContent(resumeData, theme, fonts) {
       }
 
       ${
+        resumeData.certifications && resumeData.certifications.length > 0
+          ? `
+        <h2>Certifications & Achievements</h2>
+        <div class="section">
+          ${resumeData.certifications
+            .map(
+              (cert) => `
+            <div class="entry">
+              <div class="entry-title">${cert.title}</div>
+              <div class="entry-subtitle">${cert.issuer}</div>
+              <div class="entry-date">${formatDate(cert.date)}</div>
+            </div>
+          `
+            )
+            .join("")}
+        </div>
+      `
+          : ""
+      }
+
+      ${
         resumeData.skills && resumeData.skills.length > 0
           ? `
         <h2>Skills</h2>
@@ -305,4 +354,63 @@ function generateHTMLContent(resumeData, theme, fonts) {
     </body>
     </html>
   `;
+}
+
+function generateTextContent(resumeData) {
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const [year, month] = dateString.split("-");
+    const date = new Date(year, month - 1);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+    });
+  };
+
+  let text = "";
+
+  text += `${resumeData.personalInfo.fullName}\n`;
+  text += `${resumeData.personalInfo.email} | ${resumeData.personalInfo.phone} | ${resumeData.personalInfo.location}\n\n`;
+
+  if (resumeData.personalInfo.summary) {
+    text += `SUMMARY\n${resumeData.personalInfo.summary}\n\n`;
+  }
+
+  if (resumeData.experience && resumeData.experience.length > 0) {
+    text += `EXPERIENCE\n`;
+    resumeData.experience.forEach((exp) => {
+      text += `${exp.position} - ${exp.company}\n`;
+      text += `${formatDate(exp.startDate)} - ${formatDate(exp.endDate)}\n`;
+      if (exp.bullets && exp.bullets.length > 0) {
+        exp.bullets.forEach((bullet) => {
+          text += `• ${bullet}\n`;
+        });
+      }
+      text += "\n";
+    });
+  }
+
+  if (resumeData.education && resumeData.education.length > 0) {
+    text += `EDUCATION\n`;
+    resumeData.education.forEach((edu) => {
+      text += `${edu.degree} - ${edu.school}\n`;
+      text += `${formatDate(edu.graduationDate)}\n`;
+      if (edu.field) text += `${edu.field}\n`;
+      text += "\n";
+    });
+  }
+
+  if (resumeData.skills && resumeData.skills.length > 0) {
+    text += `SKILLS\n`;
+    Array.from(new Set(resumeData.skills.map((s) => s.category))).forEach(
+      (category) => {
+        text += `${category}: ${resumeData.skills
+          .filter((s) => s.category === category)
+          .map((s) => s.name)
+          .join(", ")}\n`;
+      }
+    );
+  }
+
+  return text;
 }

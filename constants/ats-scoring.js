@@ -24,14 +24,14 @@ export const calculateATSScore = (resumeData) => {
     score += 10;
   }
 
-  // Experience (30 points)
+  // Experience (30 points) - Updated to check for bullets instead of description
   if (resumeData.experience?.length > 0) {
     let expScore = 0;
     resumeData.experience.forEach((exp) => {
       if (
         exp.company?.trim() &&
         exp.position?.trim() &&
-        exp.description?.trim()?.length > 30
+        exp.bullets?.length > 0
       ) {
         expScore += Math.min(30 / resumeData.experience.length, 10);
       }
@@ -61,6 +61,7 @@ export const calculateATSScore = (resumeData) => {
     score += breakdown.skills;
   }
 
+  // Projects (10 points)
   if (resumeData.projects?.length > 0) {
     let projScore = 0;
     resumeData.projects.forEach((proj) => {
@@ -126,12 +127,12 @@ export const getATSRecommendations = (resumeData) => {
           text: `Experience ${idx + 1}: Add job position`,
         });
       }
-      if (!exp.description?.trim() || exp.description.trim().length < 30) {
+      if (!exp.bullets || exp.bullets.length === 0) {
         recommendations.push({
           type: "warning",
           text: `Experience ${
             idx + 1
-          }: Add detailed job description (30+ characters)`,
+          }: Add at least one bullet point describing your achievements`,
         });
       }
     });

@@ -1,8 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { FiCopy, FiDownload } from "react-icons/fi";
+import { generatePDFFromHTML } from "@/utils/pdf-generator";
 
-export default function ExportOptions({ resumeData, onClose }) {
+export default function ExportOptions({
+  resumeData,
+  onClose,
+  font = "calibri",
+}) {
   const [copied, setCopied] = useState(false);
 
   const handleCopyText = () => {
@@ -12,15 +18,11 @@ export default function ExportOptions({ resumeData, onClose }) {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleDownloadPDF = () => {
-    const htmlContent = generateHTMLContent(resumeData);
-    const printWindow = window.open("", "", "width=800,height=600");
-    printWindow.document.write(htmlContent);
-    printWindow.document.close();
-    setTimeout(() => {
-      printWindow.print();
-      printWindow.close();
-    }, 250);
+  const handleDownloadPDF = async () => {
+    const htmlContent = generateHTMLContent(resumeData, font);
+    const fileName = resumeData.personalInfo.fullName || "resume";
+    await generatePDFFromHTML(htmlContent, fileName);
+    onClose();
   };
 
   const handleDownloadHTML = () => {
@@ -51,8 +53,8 @@ export default function ExportOptions({ resumeData, onClose }) {
 
   return (
     <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 max-h-96 overflow-y-auto">
-        <div className="flex justify-between items-center mb-6">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-white border-b border-slate-200 p-6 flex justify-between items-center">
           <h2 className="text-2xl font-bold text-slate-900">Export Resume</h2>
           <button
             onClick={onClose}
@@ -62,13 +64,13 @@ export default function ExportOptions({ resumeData, onClose }) {
           </button>
         </div>
 
-        <div className="space-y-3">
+        <div className="p-6 space-y-3">
           <button
             onClick={handleCopyText}
             className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-left flex items-center justify-between cursor-pointer"
           >
-            <span>Copy as Text</span>
-            <span className="text-lg">📋</span>
+            <span>{copied ? "Copied!" : "Copy as Text"}</span>
+            <FiCopy size={18} />
           </button>
 
           <button
@@ -76,7 +78,7 @@ export default function ExportOptions({ resumeData, onClose }) {
             className="w-full px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium text-left flex items-center justify-between cursor-pointer"
           >
             <span>Download as HTML</span>
-            <span className="text-lg">🌐</span>
+            <FiDownload size={18} />
           </button>
 
           <button
@@ -84,7 +86,7 @@ export default function ExportOptions({ resumeData, onClose }) {
             className="w-full px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium text-left flex items-center justify-between cursor-pointer"
           >
             <span>Download as PDF</span>
-            <span className="text-lg">📑</span>
+            <FiDownload size={18} />
           </button>
 
           <button
@@ -92,23 +94,23 @@ export default function ExportOptions({ resumeData, onClose }) {
             className="w-full px-4 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-medium text-left flex items-center justify-between cursor-pointer"
           >
             <span>Download as JSON</span>
-            <span className="text-lg">{}</span>
+            <FiDownload size={18} />
           </button>
         </div>
 
-        <div className="mt-4 p-3 bg-slate-50 rounded-lg">
-          <p className="text-xs text-slate-600">
+        <div className="border-t border-slate-200 p-6">
+          <p className="text-xs text-slate-600 mb-4">
             All exports are ATS-optimized and text-based for maximum
             compatibility with applicant tracking systems.
           </p>
-        </div>
 
-        <button
-          onClick={onClose}
-          className="w-full mt-4 px-4 py-2 bg-slate-200 text-slate-900 rounded-lg hover:bg-slate-300 transition-colors font-medium cursor-pointer"
-        >
-          Close
-        </button>
+          <button
+            onClick={onClose}
+            className="w-full px-4 py-2 bg-slate-200 text-slate-900 rounded-lg hover:bg-slate-300 transition-colors font-medium cursor-pointer"
+          >
+            Close
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -121,43 +123,71 @@ function generatePlainText(resumeData) {
     text += `${resumeData.personalInfo.fullName}\n`;
     text += `${resumeData.personalInfo.email} | ${resumeData.personalInfo.phone} | ${resumeData.personalInfo.location}\n\n`;
     if (resumeData.personalInfo.summary) {
-      text += `${resumeData.personalInfo.summary}\n\n`;
+      text += `SUMMARY\n${resumeData.personalInfo.summary}\n\n`;
     }
   }
 
   if (resumeData.experience?.length) {
     text += "EXPERIENCE\n";
     resumeData.experience.forEach((exp) => {
-      text += `${exp.position} at ${exp.company} (${exp.startDate} - ${exp.endDate})\n`;
-      text += `${exp.description}\n\n`;
+      text += `${exp.position} - ${exp.company}\n`;
+      text += `${exp.startDate} - ${exp.endDate}\n`;
+      if (exp.bullets && exp.bullets.length > 0) {
+        exp.bullets.forEach((bullet) => {
+          text += `• ${bullet}\n`;
+        });
+      }
+      text += "\n";
     });
   }
 
   if (resumeData.education?.length) {
     text += "EDUCATION\n";
     resumeData.education.forEach((edu) => {
-      text += `${edu.degree} in ${edu.field} from ${edu.school} (${edu.graduationDate})\n`;
+      text += `${edu.degree} - ${edu.school}\n`;
+      text += `${edu.graduationDate}\n`;
+      if (edu.field) text += `${edu.field}\n`;
+      text += "\n";
     });
-    text += "\n";
   }
 
   if (resumeData.projects?.length) {
     text += "PROJECTS\n";
     resumeData.projects.forEach((proj) => {
-      text += `${proj.name}: ${proj.description} (${proj.technologies})\n`;
+      text += `${proj.name}\n`;
+      text += `${proj.description}\n`;
+      if (proj.technologies) text += `Technologies: ${proj.technologies}\n`;
+      text += "\n";
     });
-    text += "\n";
+  }
+
+  if (resumeData.certifications?.length) {
+    text += "CERTIFICATIONS & ACHIEVEMENTS\n";
+    resumeData.certifications.forEach((cert) => {
+      text += `${cert.title} - ${cert.issuer}\n`;
+      if (cert.date) text += `${cert.date}\n`;
+      text += "\n";
+    });
   }
 
   if (resumeData.skills?.length) {
     text += "SKILLS\n";
-    text += resumeData.skills.map((s) => s.name).join(", ") + "\n\n";
+    const skillsByCategory = {};
+    resumeData.skills.forEach((skill) => {
+      if (!skillsByCategory[skill.category]) {
+        skillsByCategory[skill.category] = [];
+      }
+      skillsByCategory[skill.category].push(skill.name);
+    });
+    Object.entries(skillsByCategory).forEach(([category, skills]) => {
+      text += `${category}: ${skills.join(", ")}\n`;
+    });
   }
 
   return text;
 }
 
-function generateHTMLContent(resumeData) {
+function generateHTMLContent(resumeData, font) {
   const formatDate = (dateString) => {
     if (!dateString) return "";
     const [year, month] = dateString.split("-");
@@ -182,7 +212,7 @@ function generateHTMLContent(resumeData) {
           box-sizing: border-box;
         }
         body {
-          font-family: Arial, sans-serif;
+          font-family: ${font}, Arial, sans-serif;
           line-height: 1.6;
           color: #333;
           padding: 40px;
@@ -203,6 +233,7 @@ function generateHTMLContent(resumeData) {
           color: #000;
           border-bottom: 2px solid #333;
           padding-bottom: 8px;
+          font-weight: bold;
         }
         .header {
           margin-bottom: 24px;
@@ -244,9 +275,9 @@ function generateHTMLContent(resumeData) {
           color: #666;
           float: right;
         }
-        .entry-description {
+        .bullet-point {
+          margin-top: 4px;
           font-size: 12px;
-          margin-top: 6px;
           line-height: 1.5;
         }
         .skills-category {
@@ -263,7 +294,6 @@ function generateHTMLContent(resumeData) {
         }
         @media print {
           body { padding: 0; }
-          .skills-category-name { font-weight: bold; }
         }
       </style>
     </head>
@@ -313,7 +343,16 @@ function generateHTMLContent(resumeData) {
                 exp.startDate
               )} - ${formatDate(exp.endDate)}</div>
               <div class="entry-subtitle">${exp.company}</div>
-              <div class="entry-description">${exp.description}</div>
+              ${
+                exp.bullets && exp.bullets.length > 0
+                  ? exp.bullets
+                      .map(
+                        (bullet) =>
+                          `<div class="bullet-point">• ${bullet}</div>`
+                      )
+                      .join("")
+                  : ""
+              }
             </div>
           `
             )
@@ -335,11 +374,7 @@ function generateHTMLContent(resumeData) {
               <div class="entry-title">${edu.degree}</div>
               <div class="entry-date">${formatDate(edu.graduationDate)}</div>
               <div class="entry-subtitle">${edu.school}</div>
-              ${
-                edu.field
-                  ? `<div class="entry-description">${edu.field}</div>`
-                  : ""
-              }
+              ${edu.field ? `<div class="bullet-point">${edu.field}</div>` : ""}
             </div>
           `
             )
@@ -359,12 +394,33 @@ function generateHTMLContent(resumeData) {
               (proj) => `
             <div class="entry">
               <div class="entry-title">${proj.name}</div>
-              <div class="entry-description">${proj.description}</div>
+              <div class="bullet-point">${proj.description}</div>
               ${
                 proj.technologies
-                  ? `<div class="entry-subtitle">Technologies: ${proj.technologies}</div>`
+                  ? `<div class="bullet-point">Technologies: ${proj.technologies}</div>`
                   : ""
               }
+            </div>
+          `
+            )
+            .join("")}
+        </div>
+      `
+          : ""
+      }
+
+      ${
+        resumeData.certifications && resumeData.certifications.length > 0
+          ? `
+        <h2>Certifications & Achievements</h2>
+        <div class="section">
+          ${resumeData.certifications
+            .map(
+              (cert) => `
+            <div class="entry">
+              <div class="entry-title">${cert.title}</div>
+              <div class="entry-date">${formatDate(cert.date)}</div>
+              <div class="entry-subtitle">${cert.issuer}</div>
             </div>
           `
             )

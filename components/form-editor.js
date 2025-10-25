@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { FiPlus, FiX } from "react-icons/fi";
 
 export default function FormEditor({ data, onDataUpdate }) {
   const [activeTab, setActiveTab] = useState("personal");
@@ -41,6 +42,30 @@ export default function FormEditor({ data, onDataUpdate }) {
     handleDataChange({ ...data, experience: newExperience });
   };
 
+  const handleExperienceBulletChange = (expIndex, bulletIndex, value) => {
+    const newExperience = [...data.experience];
+    if (!newExperience[expIndex].bullets) {
+      newExperience[expIndex].bullets = [];
+    }
+    newExperience[expIndex].bullets[bulletIndex] = value;
+    handleDataChange({ ...data, experience: newExperience });
+  };
+
+  const addExperienceBullet = (expIndex) => {
+    const newExperience = [...data.experience];
+    if (!newExperience[expIndex].bullets) {
+      newExperience[expIndex].bullets = [];
+    }
+    newExperience[expIndex].bullets.push("");
+    handleDataChange({ ...data, experience: newExperience });
+  };
+
+  const removeExperienceBullet = (expIndex, bulletIndex) => {
+    const newExperience = [...data.experience];
+    newExperience[expIndex].bullets.splice(bulletIndex, 1);
+    handleDataChange({ ...data, experience: newExperience });
+  };
+
   const handleEducationChange = (index, field, value) => {
     const newEducation = [...data.education];
     newEducation[index] = { ...newEducation[index], [field]: value };
@@ -51,6 +76,31 @@ export default function FormEditor({ data, onDataUpdate }) {
     const newProjects = [...data.projects];
     newProjects[index] = { ...newProjects[index], [field]: value };
     handleDataChange({ ...data, projects: newProjects });
+  };
+
+  const handleCertificationChange = (index, field, value) => {
+    const newCertifications = [...(data.certifications || [])];
+    newCertifications[index] = { ...newCertifications[index], [field]: value };
+    handleDataChange({ ...data, certifications: newCertifications });
+  };
+
+  const addCertification = () => {
+    const newData = {
+      ...data,
+      certifications: [
+        ...(data.certifications || []),
+        { id: Date.now(), title: "", issuer: "", date: "" },
+      ],
+    };
+    handleDataChange(newData);
+  };
+
+  const removeCertification = (index) => {
+    const newData = {
+      ...data,
+      certifications: (data.certifications || []).filter((_, i) => i !== index),
+    };
+    handleDataChange(newData);
   };
 
   const handleSkillsChange = (index, field, value) => {
@@ -70,7 +120,7 @@ export default function FormEditor({ data, onDataUpdate }) {
           position: "",
           startDate: "",
           endDate: "",
-          description: "",
+          bullets: [],
         },
       ],
     };
@@ -229,8 +279,9 @@ export default function FormEditor({ data, onDataUpdate }) {
             </h3>
             <button
               onClick={() => removeExperience(index)}
-              className="text-red-600 hover:text-red-700 text-sm font-medium cursor-pointer"
+              className="text-red-600 hover:text-red-700 text-sm font-medium cursor-pointer flex items-center gap-1"
             >
+              <FiX size={16} />
               Remove
             </button>
           </div>
@@ -271,23 +322,51 @@ export default function FormEditor({ data, onDataUpdate }) {
                 className="px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
               />
             </div>
-            <textarea
-              value={exp.description}
-              onChange={(e) =>
-                handleExperienceChange(index, "description", e.target.value)
-              }
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm resize-none"
-              rows="3"
-              placeholder="Describe your responsibilities and achievements..."
-            />
+            <div className="space-y-2">
+              <label className="block text-xs font-medium text-slate-700">
+                Key Responsibilities & Achievements
+              </label>
+              {(exp.bullets || []).map((bullet, bulletIndex) => (
+                <div key={bulletIndex} className="flex gap-2">
+                  <span className="text-slate-400 mt-2">•</span>
+                  <input
+                    type="text"
+                    value={bullet}
+                    onChange={(e) =>
+                      handleExperienceBulletChange(
+                        index,
+                        bulletIndex,
+                        e.target.value
+                      )
+                    }
+                    className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                    placeholder="Add achievement or responsibility..."
+                  />
+                  <button
+                    onClick={() => removeExperienceBullet(index, bulletIndex)}
+                    className="text-red-600 hover:text-red-700 font-medium px-2 py-2 cursor-pointer"
+                  >
+                    <FiX size={16} />
+                  </button>
+                </div>
+              ))}
+              <button
+                onClick={() => addExperienceBullet(index)}
+                className="text-blue-600 hover:text-blue-700 text-sm font-medium cursor-pointer flex items-center gap-1"
+              >
+                <FiPlus size={16} />
+                Add Bullet Point
+              </button>
+            </div>
           </div>
         </div>
       ))}
       <button
         onClick={addExperience}
-        className="w-full px-4 py-2 border-2 border-dashed border-blue-300 text-blue-600 rounded-lg hover:bg-blue-50 font-medium transition-colors cursor-pointer"
+        className="w-full px-4 py-2 border-2 border-dashed border-blue-300 text-blue-600 rounded-lg hover:bg-blue-50 font-medium transition-colors cursor-pointer flex items-center justify-center gap-2"
       >
-        + Add Experience
+        <FiPlus size={18} />
+        Add Experience
       </button>
     </div>
   );
@@ -305,8 +384,9 @@ export default function FormEditor({ data, onDataUpdate }) {
             </h3>
             <button
               onClick={() => removeEducation(index)}
-              className="text-red-600 hover:text-red-700 text-sm font-medium cursor-pointer"
+              className="text-red-600 hover:text-red-700 text-sm font-medium cursor-pointer flex items-center gap-1"
             >
+              <FiX size={16} />
               Remove
             </button>
           </div>
@@ -351,9 +431,10 @@ export default function FormEditor({ data, onDataUpdate }) {
       ))}
       <button
         onClick={addEducation}
-        className="w-full px-4 py-2 border-2 border-dashed border-blue-300 text-blue-600 rounded-lg hover:bg-blue-50 font-medium transition-colors cursor-pointer"
+        className="w-full px-4 py-2 border-2 border-dashed border-blue-300 text-blue-600 rounded-lg hover:bg-blue-50 font-medium transition-colors cursor-pointer flex items-center justify-center gap-2"
       >
-        + Add Education
+        <FiPlus size={18} />
+        Add Education
       </button>
     </div>
   );
@@ -371,8 +452,9 @@ export default function FormEditor({ data, onDataUpdate }) {
             </h3>
             <button
               onClick={() => removeProject(index)}
-              className="text-red-600 hover:text-red-700 text-sm font-medium cursor-pointer"
+              className="text-red-600 hover:text-red-700 text-sm font-medium cursor-pointer flex items-center gap-1"
             >
+              <FiX size={16} />
               Remove
             </button>
           </div>
@@ -418,9 +500,69 @@ export default function FormEditor({ data, onDataUpdate }) {
       ))}
       <button
         onClick={addProject}
-        className="w-full px-4 py-2 border-2 border-dashed border-blue-300 text-blue-600 rounded-lg hover:bg-blue-50 font-medium transition-colors cursor-pointer"
+        className="w-full px-4 py-2 border-2 border-dashed border-blue-300 text-blue-600 rounded-lg hover:bg-blue-50 font-medium transition-colors cursor-pointer flex items-center justify-center gap-2"
       >
-        + Add Project
+        <FiPlus size={18} />
+        Add Project
+      </button>
+    </div>
+  );
+
+  const displayCertificationsTab = () => (
+    <div className="space-y-4">
+      {(data.certifications || []).map((cert, index) => (
+        <div
+          key={cert.id}
+          className="p-4 border border-slate-200 rounded-lg bg-slate-50"
+        >
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="font-semibold text-slate-900">
+              Certification {index + 1}
+            </h3>
+            <button
+              onClick={() => removeCertification(index)}
+              className="text-red-600 hover:text-red-700 text-sm font-medium cursor-pointer flex items-center gap-1"
+            >
+              <FiX size={16} />
+              Remove
+            </button>
+          </div>
+          <div className="space-y-3">
+            <input
+              type="text"
+              value={cert.title}
+              onChange={(e) =>
+                handleCertificationChange(index, "title", e.target.value)
+              }
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              placeholder="Certification Title"
+            />
+            <input
+              type="text"
+              value={cert.issuer}
+              onChange={(e) =>
+                handleCertificationChange(index, "issuer", e.target.value)
+              }
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              placeholder="Issuing Organization"
+            />
+            <input
+              type="month"
+              value={cert.date}
+              onChange={(e) =>
+                handleCertificationChange(index, "date", e.target.value)
+              }
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+            />
+          </div>
+        </div>
+      ))}
+      <button
+        onClick={addCertification}
+        className="w-full px-4 py-2 border-2 border-dashed border-blue-300 text-blue-600 rounded-lg hover:bg-blue-50 font-medium transition-colors cursor-pointer flex items-center justify-center gap-2"
+      >
+        <FiPlus size={18} />
+        Add Certification
       </button>
     </div>
   );
@@ -459,17 +601,18 @@ export default function FormEditor({ data, onDataUpdate }) {
           </div>
           <button
             onClick={() => removeSkill(index)}
-            className="text-red-600 hover:text-red-700 font-medium px-3 py-2 cursor-pointer"
+            className="text-red-600 hover:text-red-700 font-medium px-3 py-2 cursor-pointer flex items-center gap-1"
           >
-            ✕
+            <FiX size={16} />
           </button>
         </div>
       ))}
       <button
         onClick={addSkill}
-        className="w-full px-4 py-2 border-2 border-dashed border-blue-300 text-blue-600 rounded-lg hover:bg-blue-50 font-medium transition-colors cursor-pointer"
+        className="w-full px-4 py-2 border-2 border-dashed border-blue-300 text-blue-600 rounded-lg hover:bg-blue-50 font-medium transition-colors cursor-pointer flex items-center justify-center gap-2"
       >
-        + Add Skill
+        <FiPlus size={18} />
+        Add Skill
       </button>
     </div>
   );
@@ -510,6 +653,7 @@ export default function FormEditor({ data, onDataUpdate }) {
               { id: "experience", label: "Experience" },
               { id: "education", label: "Education" },
               { id: "projects", label: "Projects" },
+              { id: "certifications", label: "Certifications" },
               { id: "skills", label: "Skills" },
             ].map((tab) => (
               <button
@@ -531,6 +675,7 @@ export default function FormEditor({ data, onDataUpdate }) {
           {activeTab === "experience" && displayExperienceTab()}
           {activeTab === "education" && displayEducationTab()}
           {activeTab === "projects" && displayProjectsTab()}
+          {activeTab === "certifications" && displayCertificationsTab()}
           {activeTab === "skills" && displaySkillsTab()}
         </>
       )}
