@@ -11,9 +11,9 @@ export default function ResumePreview({ data, template = "ats-friendly" }) {
     });
   };
 
-  const formatDateRange = (startDate, endDate) => {
+  const formatDateRange = (startDate, endDate, isCurrentRole) => {
     const start = formatDate(startDate);
-    const end = formatDate(endDate);
+    const end = isCurrentRole ? "Present" : formatDate(endDate);
     return `${start} — ${end}`;
   };
 
@@ -39,18 +39,67 @@ export default function ResumePreview({ data, template = "ats-friendly" }) {
           {data.personalInfo.fullName}
         </h1>
         <div
-          className="flex flex-wrap gap-2 text-xs sm:text-sm text-slate-700"
+          className="flex flex-wrap gap-1 text-xs sm:text-sm text-slate-700 mb-2"
           style={{ fontSize: "11px", lineHeight: "1.4" }}
         >
-          {data.personalInfo.phone && <span>{data.personalInfo.phone}</span>}
-          {data.personalInfo.phone && data.personalInfo.email && <span>◆</span>}
           {data.personalInfo.email && <span>{data.personalInfo.email}</span>}
-          {(data.personalInfo.phone || data.personalInfo.email) &&
-            data.personalInfo.location && <span>◆</span>}
+          {data.personalInfo.phone && (
+            <>
+              <span>|</span>
+              <span>{data.personalInfo.phone}</span>
+            </>
+          )}
           {data.personalInfo.location && (
-            <span>{data.personalInfo.location}</span>
+            <>
+              <span>|</span>
+              <span>{data.personalInfo.location}</span>
+            </>
           )}
         </div>
+        {(data.personalInfo.linkedin ||
+          data.personalInfo.github ||
+          data.personalInfo.website) && (
+          <div
+            className="flex flex-wrap gap-1 text-xs sm:text-sm text-slate-700"
+            style={{ fontSize: "11px", lineHeight: "1.4" }}
+          >
+            {data.personalInfo.linkedin && (
+              <>
+                <span>LinkedIn:</span>
+                <a
+                  href={data.personalInfo.linkedin}
+                  className="text-blue-600 hover:underline"
+                >
+                  {data.personalInfo.linkedin}
+                </a>
+              </>
+            )}
+            {data.personalInfo.github && (
+              <>
+                <span>|</span>
+                <span>GitHub:</span>
+                <a
+                  href={data.personalInfo.github}
+                  className="text-blue-600 hover:underline"
+                >
+                  {data.personalInfo.github}
+                </a>
+              </>
+            )}
+            {data.personalInfo.website && (
+              <>
+                <span>|</span>
+                <span>Portfolio:</span>
+                <a
+                  href={data.personalInfo.website}
+                  className="text-blue-600 hover:underline"
+                >
+                  {data.personalInfo.website}
+                </a>
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       {data.personalInfo.summary && (
@@ -73,7 +122,7 @@ export default function ResumePreview({ data, template = "ats-friendly" }) {
             className="text-sm font-bold uppercase tracking-wide mb-3 border-b border-slate-300 pb-1"
             style={{ fontSize: "14px", fontWeight: "bold" }}
           >
-            Experience
+            Work Experience
           </h2>
           <div className="space-y-4">
             {data.experience.map((exp, idx) => (
@@ -86,7 +135,11 @@ export default function ResumePreview({ data, template = "ats-friendly" }) {
                     className="text-xs text-slate-600"
                     style={{ fontSize: "11px" }}
                   >
-                    {formatDateRange(exp.startDate, exp.endDate)}
+                    {formatDateRange(
+                      exp.startDate,
+                      exp.endDate,
+                      exp.isCurrentRole
+                    )}
                   </span>
                 </div>
                 <p
@@ -133,7 +186,11 @@ export default function ResumePreview({ data, template = "ats-friendly" }) {
                     className="text-xs text-slate-600"
                     style={{ fontSize: "11px" }}
                   >
-                    {formatDate(edu.graduationDate)}
+                    {formatDateRange(
+                      edu.startDate,
+                      edu.endDate,
+                      edu.isCurrentRole
+                    )}
                   </span>
                 </div>
                 <p

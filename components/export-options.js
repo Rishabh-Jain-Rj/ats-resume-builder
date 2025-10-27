@@ -121,17 +121,31 @@ function generatePlainText(resumeData) {
 
   if (resumeData.personalInfo) {
     text += `${resumeData.personalInfo.fullName}\n`;
-    text += `${resumeData.personalInfo.email} | ${resumeData.personalInfo.phone} | ${resumeData.personalInfo.location}\n\n`;
+    text += `${resumeData.personalInfo.email} | ${resumeData.personalInfo.phone} | ${resumeData.personalInfo.location}\n`;
+
+    const links = [];
+    if (resumeData.personalInfo.linkedin)
+      links.push(`LinkedIn: ${resumeData.personalInfo.linkedin}`);
+    if (resumeData.personalInfo.github)
+      links.push(`GitHub: ${resumeData.personalInfo.github}`);
+    if (resumeData.personalInfo.website)
+      links.push(`Portfolio: ${resumeData.personalInfo.website}`);
+    if (links.length > 0) {
+      text += `${links.join(" | ")}\n`;
+    }
+    text += "\n";
+
     if (resumeData.personalInfo.summary) {
       text += `SUMMARY\n${resumeData.personalInfo.summary}\n\n`;
     }
   }
 
   if (resumeData.experience?.length) {
-    text += "EXPERIENCE\n";
+    text += "WORK EXPERIENCE\n";
     resumeData.experience.forEach((exp) => {
       text += `${exp.position} - ${exp.company}\n`;
-      text += `${exp.startDate} - ${exp.endDate}\n`;
+      const endDate = exp.isCurrentRole ? "Present" : exp.endDate;
+      text += `${exp.startDate} - ${endDate}\n`;
       if (exp.bullets && exp.bullets.length > 0) {
         exp.bullets.forEach((bullet) => {
           text += `• ${bullet}\n`;
@@ -145,7 +159,8 @@ function generatePlainText(resumeData) {
     text += "EDUCATION\n";
     resumeData.education.forEach((edu) => {
       text += `${edu.degree} - ${edu.school}\n`;
-      text += `${edu.graduationDate}\n`;
+      const endDate = edu.isCurrentRole ? "Present" : edu.endDate;
+      text += `${edu.startDate} - ${endDate}\n`;
       if (edu.field) text += `${edu.field}\n`;
       text += "\n";
     });
@@ -212,7 +227,7 @@ function generateHTMLContent(resumeData, font) {
           box-sizing: border-box;
         }
         body {
-          font-family: ${font}, Arial, sans-serif;
+          font-family: Calibri, Arial, sans-serif;
           line-height: 1.6;
           color: #333;
           padding: 40px;
@@ -247,6 +262,14 @@ function generateHTMLContent(resumeData, font) {
         }
         .contact span {
           margin: 0 4px;
+        }
+        .contact span:first-child {
+          margin-left: 0;
+        }
+        .links {
+          font-size: 11px;
+          color: #666;
+          margin-top: 4px;
         }
         .summary {
           margin-bottom: 20px;
@@ -317,6 +340,42 @@ function generateHTMLContent(resumeData, font) {
               : ""
           }
         </div>
+        ${
+          resumeData.personalInfo.linkedin ||
+          resumeData.personalInfo.github ||
+          resumeData.personalInfo.website
+            ? `
+          <div class="links">
+            ${
+              resumeData.personalInfo.linkedin
+                ? `LinkedIn: <a href="${resumeData.personalInfo.linkedin}">${resumeData.personalInfo.linkedin}</a>`
+                : ""
+            }
+            ${
+              resumeData.personalInfo.github
+                ? `${
+                    resumeData.personalInfo.linkedin ? " | " : ""
+                  }GitHub: <a href="${resumeData.personalInfo.github}">${
+                    resumeData.personalInfo.github
+                  }</a>`
+                : ""
+            }
+            ${
+              resumeData.personalInfo.website
+                ? `${
+                    resumeData.personalInfo.linkedin ||
+                    resumeData.personalInfo.github
+                      ? " | "
+                      : ""
+                  }Portfolio: <a href="${resumeData.personalInfo.website}">${
+                    resumeData.personalInfo.website
+                  }</a>`
+                : ""
+            }
+          </div>
+        `
+            : ""
+        }
       </div>
 
       ${
@@ -332,16 +391,16 @@ function generateHTMLContent(resumeData, font) {
       ${
         resumeData.experience && resumeData.experience.length > 0
           ? `
-        <h2>Experience</h2>
+        <h2>Work Experience</h2>
         <div class="section">
           ${resumeData.experience
             .map(
               (exp) => `
             <div class="entry">
               <div class="entry-title">${exp.position}</div>
-              <div class="entry-date">${formatDate(
-                exp.startDate
-              )} - ${formatDate(exp.endDate)}</div>
+              <div class="entry-date">${formatDate(exp.startDate)} - ${
+                exp.isCurrentRole ? "Present" : formatDate(exp.endDate)
+              }</div>
               <div class="entry-subtitle">${exp.company}</div>
               ${
                 exp.bullets && exp.bullets.length > 0
@@ -372,7 +431,9 @@ function generateHTMLContent(resumeData, font) {
               (edu) => `
             <div class="entry">
               <div class="entry-title">${edu.degree}</div>
-              <div class="entry-date">${formatDate(edu.graduationDate)}</div>
+              <div class="entry-date">${formatDate(edu.startDate)} - ${
+                edu.isCurrentRole ? "Present" : formatDate(edu.endDate)
+              }</div>
               <div class="entry-subtitle">${edu.school}</div>
               ${edu.field ? `<div class="bullet-point">${edu.field}</div>` : ""}
             </div>

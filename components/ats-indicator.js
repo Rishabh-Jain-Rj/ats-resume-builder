@@ -1,11 +1,12 @@
 "use client";
 
 import { useMemo } from "react";
+import { FiInfo } from "react-icons/fi";
 import {
   calculateATSScore,
   getATSRecommendations,
   getATSWarnings,
-} from "../constants/ats-scoring";
+} from "@/constants/ats-scoring";
 
 export default function ATSIndicator({
   resumeData,
@@ -41,14 +42,20 @@ export default function ATSIndicator({
 
   if (!showFullDetails) {
     return (
-      <div
-        className="bg-white rounded-lg shadow-lg p-6 top-24 cursor-pointer"
-        onClick={() => onOpenDrawer && onOpenDrawer()}
-      >
+      <div className="bg-white rounded-lg shadow-lg p-6 top-24 cursor-pointer">
         <div className="mb-6">
           <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 group relative">
               <h3 className="text-lg font-bold text-slate-900">ATS Score</h3>
+              <button
+                onClick={() => onOpenDrawer && onOpenDrawer()}
+                className="text-slate-400 hover:text-blue-600 transition-colors cursor-pointer"
+              >
+                <FiInfo size={18} />
+              </button>
+              <div className="absolute bottom-full left-0  hidden group-hover:block bg-slate-900 text-white text-xs rounded-lg px-3 py-2 whitespace-nowrap z-10">
+                Click to see detailed recommendations
+              </div>
             </div>
             <span
               className={`text-4xl font-bold bg-gradient-to-r ${getScoreColor(

@@ -7,8 +7,7 @@ import FormEditor from "@/components/form-editor";
 import ResumePreview from "@/components/resume-preview";
 import ATSIndicator from "@/components/ats-indicator";
 import ExportOptions from "@/components/export-options";
-import { calculateATSScore } from "@/constants/ats-scoring";
-import { FiDownload, FiSettings, FiRotateCcw } from "react-icons/fi";
+import { FiDownload, FiRotateCcw } from "react-icons/fi";
 import ConfirmPopup from "@/components/confirm-popup";
 
 export default function Home() {
@@ -110,7 +109,7 @@ export default function Home() {
 
   const displayTopRowUI = () => (
     <div className="grid grid-cols-1 lg:grid-cols-6 gap-6 mb-8">
-      {/* Form Editor - 2 columns */}
+      {/* Form Editor - 4 columns */}
       <div className="lg:col-span-4">
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-4">
@@ -177,7 +176,7 @@ export default function Home() {
       {/* ATS Drawer */}
       {showATSDrawer && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4">
-          <div className="bg-white rounded-t-lg sm:rounded-lg shadow-xl w-full sm:max-w-2xl max-h-96 overflow-y-auto">
+          <div className="bg-white rounded-t-lg sm:rounded-lg overflow-hidden shadow-xl w-full sm:max-w-2xl ">
             <div className="flex justify-between items-center p-6 border-b border-slate-200 sticky top-0 bg-white">
               <h2 className="text-2xl font-bold text-slate-900">
                 ATS Score Details
@@ -189,7 +188,7 @@ export default function Home() {
                 ×
               </button>
             </div>
-            <div className="p-6">
+            <div className="p-6 m-2 max-h-96 overflow-y-auto">
               <ATSIndicator resumeData={resumeData} showFullDetails={true} />
             </div>
           </div>

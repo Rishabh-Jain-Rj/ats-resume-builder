@@ -4,10 +4,22 @@ import { useState } from "react";
 import { FiPlus, FiX } from "react-icons/fi";
 
 export default function FormEditor({ data, onDataUpdate }) {
-  const [activeTab, setActiveTab] = useState("personal");
+  const [activeTab, setActiveTab] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("selectedFormTab") || "personal";
+    }
+    return "personal";
+  });
   const [editorMode, setEditorMode] = useState("form");
   const [jsonError, setJsonError] = useState("");
   const [jsonText, setJsonText] = useState(JSON.stringify(data, null, 2));
+
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("selectedFormTab", tabId);
+    }
+  };
 
   const handleJsonChange = (text) => {
     setJsonText(text);
@@ -121,6 +133,7 @@ export default function FormEditor({ data, onDataUpdate }) {
           startDate: "",
           endDate: "",
           bullets: [],
+          isCurrentRole: false,
         },
       ],
     };
@@ -145,7 +158,9 @@ export default function FormEditor({ data, onDataUpdate }) {
           school: "",
           degree: "",
           field: "",
-          graduationDate: "",
+          startDate: "",
+          endDate: "",
+          isCurrentRole: false,
         },
       ],
     };
@@ -253,6 +268,42 @@ export default function FormEditor({ data, onDataUpdate }) {
       </div>
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-1">
+          LinkedIn Profile (Optional)
+        </label>
+        <input
+          type="url"
+          value={data.personalInfo.linkedin || ""}
+          onChange={(e) => handlePersonalInfoChange("linkedin", e.target.value)}
+          className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="https://linkedin.com/in/yourprofile"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-slate-700 mb-1">
+          GitHub Profile (Optional)
+        </label>
+        <input
+          type="url"
+          value={data.personalInfo.github || ""}
+          onChange={(e) => handlePersonalInfoChange("github", e.target.value)}
+          className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="https://github.com/yourprofile"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-slate-700 mb-1">
+          Portfolio/Website (Optional)
+        </label>
+        <input
+          type="url"
+          value={data.personalInfo.website || ""}
+          onChange={(e) => handlePersonalInfoChange("website", e.target.value)}
+          className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="https://yourportfolio.com"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-slate-700 mb-1">
           Professional Summary
         </label>
         <textarea
@@ -275,7 +326,7 @@ export default function FormEditor({ data, onDataUpdate }) {
         >
           <div className="flex justify-between items-center mb-3">
             <h3 className="font-semibold text-slate-900">
-              Experience {index + 1}
+              Work Experience {index + 1}
             </h3>
             <button
               onClick={() => removeExperience(index)}
@@ -305,22 +356,50 @@ export default function FormEditor({ data, onDataUpdate }) {
               placeholder="Job Title"
             />
             <div className="grid grid-cols-2 gap-2">
-              <input
-                type="month"
-                value={exp.startDate}
-                onChange={(e) =>
-                  handleExperienceChange(index, "startDate", e.target.value)
-                }
-                className="px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-              />
-              <input
-                type="month"
-                value={exp.endDate}
-                onChange={(e) =>
-                  handleExperienceChange(index, "endDate", e.target.value)
-                }
-                className="px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-              />
+              <div>
+                <label className="block text-xs font-medium text-slate-700 mb-1">
+                  Start Date
+                </label>
+                <input
+                  type="month"
+                  value={exp.startDate}
+                  onChange={(e) =>
+                    handleExperienceChange(index, "startDate", e.target.value)
+                  }
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-700 mb-1">
+                  End Date
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="month"
+                    value={exp.endDate}
+                    onChange={(e) =>
+                      handleExperienceChange(index, "endDate", e.target.value)
+                    }
+                    className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                    disabled={exp.isCurrentRole}
+                  />
+                  <label className="flex items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={exp.isCurrentRole || false}
+                      onChange={(e) =>
+                        handleExperienceChange(
+                          index,
+                          "isCurrentRole",
+                          e.target.checked
+                        )
+                      }
+                      className="cursor-pointer"
+                    />
+                    <span className="text-slate-700">Present</span>
+                  </label>
+                </div>
+              </div>
             </div>
             <div className="space-y-2">
               <label className="block text-xs font-medium text-slate-700">
@@ -366,7 +445,7 @@ export default function FormEditor({ data, onDataUpdate }) {
         className="w-full px-4 py-2 border-2 border-dashed border-blue-300 text-blue-600 rounded-lg hover:bg-blue-50 font-medium transition-colors cursor-pointer flex items-center justify-center gap-2"
       >
         <FiPlus size={18} />
-        Add Experience
+        Add Work Experience
       </button>
     </div>
   );
@@ -418,14 +497,52 @@ export default function FormEditor({ data, onDataUpdate }) {
               className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
               placeholder="Field of Study"
             />
-            <input
-              type="month"
-              value={edu.graduationDate}
-              onChange={(e) =>
-                handleEducationChange(index, "graduationDate", e.target.value)
-              }
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-            />
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="block text-xs font-medium text-slate-700 mb-1">
+                  Start Date
+                </label>
+                <input
+                  type="month"
+                  value={edu.startDate}
+                  onChange={(e) =>
+                    handleEducationChange(index, "startDate", e.target.value)
+                  }
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-700 mb-1">
+                  End Date
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="month"
+                    value={edu.endDate}
+                    onChange={(e) =>
+                      handleEducationChange(index, "endDate", e.target.value)
+                    }
+                    className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                    disabled={edu.isCurrentRole}
+                  />
+                  <label className="flex items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={edu.isCurrentRole || false}
+                      onChange={(e) =>
+                        handleEducationChange(
+                          index,
+                          "isCurrentRole",
+                          e.target.checked
+                        )
+                      }
+                      className="cursor-pointer"
+                    />
+                    <span className="text-slate-700">Present</span>
+                  </label>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       ))}
@@ -650,7 +767,7 @@ export default function FormEditor({ data, onDataUpdate }) {
           <div className="flex gap-2 mb-6 border-b border-slate-200 overflow-x-auto">
             {[
               { id: "personal", label: "Personal" },
-              { id: "experience", label: "Experience" },
+              { id: "experience", label: "Work Experience" },
               { id: "education", label: "Education" },
               { id: "projects", label: "Projects" },
               { id: "certifications", label: "Certifications" },
@@ -658,7 +775,7 @@ export default function FormEditor({ data, onDataUpdate }) {
             ].map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => handleTabChange(tab.id)}
                 className={`px-4 py-2 font-medium whitespace-nowrap border-b-2 transition-colors cursor-pointer ${
                   activeTab === tab.id
                     ? "border-blue-600 text-blue-600"
