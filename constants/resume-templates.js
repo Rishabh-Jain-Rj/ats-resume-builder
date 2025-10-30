@@ -26,13 +26,14 @@ export const DEFAULT_RESUME_DATA = {
     github: "https://github.com/markgates",
     website: "https://markgates.dev",
     summary:
-      "Software Developer with over 5 years of experience in designing, developing, and deploying scalable software solutions, currently driving innovation at Google by enhancing high-traffic applications and integrating Google Cloud Platform services. Recognized for achieving a 30% improvement in performance through codebase optimization while leveraging expertise in programming, cloud computing, and agile methodologies. Demonstrates a proven track record in reducing deployment time by 40% with CI/CD automation and holds multiple project certifications, reinforcing a strong commitment to continuous learning and technical excellence.",
+      "Software Developer with over 5 years of experience in designing, developing, and deploying scalable software solutions, currently driving innovation at Meta by enhancing high-traffic applications and integrating cloud services. Recognized for achieving a 30% improvement in performance through codebase optimization while leveraging expertise in programming, cloud computing, and agile methodologies. Demonstrates a proven track record in reducing deployment time by 40% with CI/CD automation and holds multiple project certifications, reinforcing a strong commitment to continuous learning and technical excellence.",
   },
   experience: [
     {
       id: "1",
       company: "Meta",
       position: "Software Developer",
+      location: "Menlo Park, CA",
       startDate: "2022-07",
       endDate: "2025-06",
       isCurrentRole: true,
@@ -47,7 +48,8 @@ export const DEFAULT_RESUME_DATA = {
       id: "2",
       company: "Tech Solutions Inc.",
       position: "Software Engineer",
-      startDate: "2022-06",
+      location: "San Francisco, CA",
+      startDate: "2020-01",
       endDate: "2022-06",
       isCurrentRole: false,
       bullets: [
@@ -61,8 +63,9 @@ export const DEFAULT_RESUME_DATA = {
       id: "3",
       company: "InnovateTech",
       position: "Junior Software Developer",
-      startDate: "2018-07",
-      endDate: "2018-05",
+      location: "Palo Alto, CA",
+      startDate: "2018-05",
+      endDate: "2019-12",
       isCurrentRole: false,
       bullets: [
         "Assisted in the development of internal tools and client-facing applications.",
@@ -85,7 +88,7 @@ export const DEFAULT_RESUME_DATA = {
   projects: [
     {
       id: "1",
-      name: "Automated Deployment Pipeline, Google",
+      name: "Automated Deployment Pipeline, Meta",
       description:
         "Developed a CI/CD pipeline using Jenkins and Docker to automate application deployment.\nReduced deployment time by 40% and minimized manual errors through automation.",
       technologies: "Jenkins, Docker, Kubernetes, Webpack, Babel",

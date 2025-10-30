@@ -1,84 +1,140 @@
 export const calculateATSScore = (resumeData) => {
   let score = 0;
   const breakdown = {
-    personalInfo: 0,
+    contactInfo: 0,
+    summary: 0,
     experience: 0,
     education: 0,
     skills: 0,
     projects: 0,
+    certifications: 0,
+    formatting: 0,
   };
 
-  // Personal Info (25 points)
-  const personalInfoFields = ["fullName", "email", "phone", "location"];
-  let personalInfoCount = 0;
-  personalInfoFields.forEach((field) => {
+  // Contact Information (15 points)
+  const contactFields = ["fullName", "email", "phone", "location"];
+  let contactCount = 0;
+  contactFields.forEach((field) => {
     if (resumeData.personalInfo?.[field]?.trim()) {
-      personalInfoCount++;
+      contactCount++;
     }
   });
-  breakdown.personalInfo = Math.round((personalInfoCount / 4) * 25);
-  score += breakdown.personalInfo;
+  breakdown.contactInfo = Math.round((contactCount / 4) * 15);
+  score += breakdown.contactInfo;
 
-  // Summary (10 points bonus)
+  // Professional Summary (10 points)
   if (resumeData.personalInfo?.summary?.trim()?.length > 50) {
+    breakdown.summary = 10;
     score += 10;
+  } else if (resumeData.personalInfo?.summary?.trim()?.length > 0) {
+    breakdown.summary = 5;
+    score += 5;
   }
 
-  // Experience (30 points) - Updated to check for bullets instead of description
+  // Work Experience (25 points)
   if (resumeData.experience?.length > 0) {
     let expScore = 0;
+    let validExperiences = 0;
     resumeData.experience.forEach((exp) => {
+      const isValidDate = validateDateSequence(
+        exp.startDate,
+        exp.endDate,
+        exp.isCurrentRole
+      );
       if (
         exp.company?.trim() &&
         exp.position?.trim() &&
-        exp.bullets?.length > 0
+        exp.bullets?.length > 0 &&
+        isValidDate
       ) {
-        expScore += Math.min(30 / resumeData.experience.length, 10);
+        validExperiences++;
       }
     });
-    breakdown.experience = Math.round(expScore);
-    score += breakdown.experience;
+    expScore = Math.min(validExperiences * 8, 25);
+    breakdown.experience = expScore;
+    score += expScore;
   }
 
-  // Education (20 points)
+  // Education (15 points)
   if (resumeData.education?.length > 0) {
     let eduScore = 0;
+    let validEducations = 0;
     resumeData.education.forEach((edu) => {
-      if (edu.school?.trim() && edu.degree?.trim()) {
-        eduScore += Math.min(20 / resumeData.education.length, 10);
+      const isValidDate = validateDateSequence(
+        edu.startDate,
+        edu.endDate,
+        edu.isCurrentRole
+      );
+      if (edu.school?.trim() && edu.degree?.trim() && isValidDate) {
+        validEducations++;
       }
     });
-    breakdown.education = Math.round(eduScore);
-    score += breakdown.education;
+    eduScore = Math.min(validEducations * 7, 15);
+    breakdown.education = eduScore;
+    score += eduScore;
   }
 
   // Skills (15 points)
-  if (resumeData.skills?.length >= 5) {
+  if (resumeData.skills?.length >= 10) {
     breakdown.skills = 15;
     score += 15;
+  } else if (resumeData.skills?.length >= 5) {
+    breakdown.skills = 10;
+    score += 10;
   } else if (resumeData.skills?.length > 0) {
-    breakdown.skills = Math.round((resumeData.skills.length / 5) * 15);
+    breakdown.skills = Math.round((resumeData.skills.length / 5) * 10);
     score += breakdown.skills;
   }
 
   // Projects (10 points)
   if (resumeData.projects?.length > 0) {
     let projScore = 0;
+    let validProjects = 0;
     resumeData.projects.forEach((proj) => {
-      if (proj.name?.trim() && proj.description?.trim()?.length > 20) {
-        projScore += Math.min(10 / resumeData.projects.length, 5);
+      if (
+        proj.name?.trim() &&
+        proj.description?.trim()?.length > 20 &&
+        proj.technologies?.trim()
+      ) {
+        validProjects++;
       }
     });
-    breakdown.projects = Math.round(projScore) || 0;
-    score += breakdown.projects;
-  } else {
-    breakdown.projects = 0;
+    projScore = Math.min(validProjects * 5, 10);
+    breakdown.projects = projScore;
+    score += projScore;
+  }
+
+  // Certifications (5 points)
+  if (resumeData.certifications?.length > 0) {
+    breakdown.certifications = 5;
+    score += 5;
+  }
+
+  // Formatting (5 points) - Always award if data exists
+  if (resumeData.personalInfo && resumeData.experience?.length > 0) {
+    breakdown.formatting = 5;
+    score += 5;
   }
 
   return {
     score: Math.min(Math.round(score), 100),
     breakdown,
   };
+};
+
+const validateDateSequence = (startDate, endDate, isCurrentRole) => {
+  if (!startDate) return false;
+  if (isCurrentRole) return true;
+  if (!endDate) return false;
+
+  const [startYear, startMonth] = startDate.split("-").map(Number);
+  const [endYear, endMonth] = endDate.split("-").map(Number);
+
+  // Check if end date is after start date
+  if (endYear < startYear) return false;
+  if (endYear === startYear && endMonth <= startMonth) return false;
+
+  return true;
 };
 
 export const getATSRecommendations = (resumeData) => {
@@ -104,7 +160,7 @@ export const getATSRecommendations = (resumeData) => {
   } else if (resumeData.personalInfo.summary.trim().length < 50) {
     recommendations.push({
       type: "warning",
-      text: "Expand your professional summary",
+      text: "Expand your professional summary to 50+ characters",
     });
   }
 
@@ -125,6 +181,14 @@ export const getATSRecommendations = (resumeData) => {
         recommendations.push({
           type: "error",
           text: `Experience ${idx + 1}: Add job position`,
+        });
+      }
+      if (
+        !validateDateSequence(exp.startDate, exp.endDate, exp.isCurrentRole)
+      ) {
+        recommendations.push({
+          type: "error",
+          text: `Experience ${idx + 1}: End date must be after start date`,
         });
       }
       if (!exp.bullets || exp.bullets.length === 0) {
@@ -157,15 +221,37 @@ export const getATSRecommendations = (resumeData) => {
           text: `Education ${idx + 1}: Add degree`,
         });
       }
+      if (
+        !validateDateSequence(edu.startDate, edu.endDate, edu.isCurrentRole)
+      ) {
+        recommendations.push({
+          type: "error",
+          text: `Education ${idx + 1}: End date must be after start date`,
+        });
+      }
     });
   }
 
   if (!resumeData.skills?.length) {
     recommendations.push({ type: "error", text: "Add at least 5 skills" });
-  } else if (resumeData.skills.length < 5) {
+  } else if (resumeData.skills.length < 10) {
     recommendations.push({
       type: "warning",
-      text: `Add more skills (currently ${resumeData.skills.length}, recommended 5+)`,
+      text: `Add more skills (currently ${resumeData.skills.length}, recommended 10+)`,
+    });
+  }
+
+  if (!resumeData.projects?.length) {
+    recommendations.push({
+      type: "warning",
+      text: "Add at least one project to improve ATS score",
+    });
+  }
+
+  if (!resumeData.certifications?.length) {
+    recommendations.push({
+      type: "warning",
+      text: "Add certifications to strengthen your profile",
     });
   }
 

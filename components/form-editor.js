@@ -130,6 +130,7 @@ export default function FormEditor({ data, onDataUpdate }) {
           id: Date.now(),
           company: "",
           position: "",
+          location: "",
           startDate: "",
           endDate: "",
           bullets: [],
@@ -354,6 +355,15 @@ export default function FormEditor({ data, onDataUpdate }) {
               }
               className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
               placeholder="Job Title"
+            />
+            <input
+              type="text"
+              value={exp.location || ""}
+              onChange={(e) =>
+                handleExperienceChange(index, "location", e.target.value)
+              }
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              placeholder="Location (e.g., San Francisco, CA)"
             />
             <div className="grid grid-cols-2 gap-2">
               <div>

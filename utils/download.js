@@ -225,17 +225,19 @@ function generateHTMLContent(resumeData, font) {
       ${
         resumeData.experience && resumeData.experience.length > 0
           ? `
-        <h2>Experience</h2>
+        <h2>Work Experience</h2>
         <div class="section">
           ${resumeData.experience
             .map(
               (exp) => `
             <div class="entry">
               <div class="entry-title">${exp.position}</div>
-              <div class="entry-date">${formatDate(
-                exp.startDate
-              )} - ${formatDate(exp.endDate)}</div>
-              <div class="entry-subtitle">${exp.company}</div>
+              <div class="entry-date">${formatDate(exp.startDate)} - ${
+                exp.isCurrentRole ? "Present" : formatDate(exp.endDate)
+              }</div>
+              <div class="entry-subtitle">${exp.company}${
+                exp.location ? `, ${exp.location}` : ""
+              }</div>
               ${
                 exp.bullets && exp.bullets.length > 0
                   ? exp.bullets
@@ -265,7 +267,9 @@ function generateHTMLContent(resumeData, font) {
               (edu) => `
             <div class="entry">
               <div class="entry-title">${edu.degree}</div>
-              <div class="entry-date">${formatDate(edu.graduationDate)}</div>
+              <div class="entry-date">${formatDate(edu.startDate)} - ${
+                edu.isCurrentRole ? "Present" : formatDate(edu.endDate)
+              }</div>
               <div class="entry-subtitle">${edu.school}</div>
               ${
                 edu.field
@@ -377,10 +381,14 @@ function generateTextContent(resumeData) {
   }
 
   if (resumeData.experience && resumeData.experience.length > 0) {
-    text += `EXPERIENCE\n`;
+    text += `WORK EXPERIENCE\n`;
     resumeData.experience.forEach((exp) => {
-      text += `${exp.position} - ${exp.company}\n`;
-      text += `${formatDate(exp.startDate)} - ${formatDate(exp.endDate)}\n`;
+      text += `${exp.position} - ${exp.company}${
+        exp.location ? `, ${exp.location}` : ""
+      }\n`;
+      text += `${formatDate(exp.startDate)} - ${
+        exp.isCurrentRole ? "Present" : formatDate(exp.endDate)
+      }\n`;
       if (exp.bullets && exp.bullets.length > 0) {
         exp.bullets.forEach((bullet) => {
           text += `• ${bullet}\n`;
@@ -394,7 +402,9 @@ function generateTextContent(resumeData) {
     text += `EDUCATION\n`;
     resumeData.education.forEach((edu) => {
       text += `${edu.degree} - ${edu.school}\n`;
-      text += `${formatDate(edu.graduationDate)}\n`;
+      text += `${formatDate(edu.startDate)} - ${
+        edu.isCurrentRole ? "Present" : formatDate(edu.endDate)
+      }\n`;
       if (edu.field) text += `${edu.field}\n`;
       text += "\n";
     });

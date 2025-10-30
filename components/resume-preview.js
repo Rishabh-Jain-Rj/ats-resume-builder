@@ -147,6 +147,7 @@ export default function ResumePreview({ data, template = "ats-friendly" }) {
                   style={{ fontSize: "11.5px" }}
                 >
                   {exp.company}
+                  {exp.location && ` | ${exp.location}`}
                 </p>
                 {(exp.bullets || []).length > 0 && (
                   <ul

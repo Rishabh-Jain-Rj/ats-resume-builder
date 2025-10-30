@@ -143,7 +143,9 @@ function generatePlainText(resumeData) {
   if (resumeData.experience?.length) {
     text += "WORK EXPERIENCE\n";
     resumeData.experience.forEach((exp) => {
-      text += `${exp.position} - ${exp.company}\n`;
+      text += `${exp.position} - ${exp.company}${
+        exp.location ? ` | ${exp.location}` : ""
+      }\n`;
       const endDate = exp.isCurrentRole ? "Present" : exp.endDate;
       text += `${exp.startDate} - ${endDate}\n`;
       if (exp.bullets && exp.bullets.length > 0) {
@@ -263,9 +265,6 @@ function generateHTMLContent(resumeData, font) {
         .contact span {
           margin: 0 4px;
         }
-        .contact span:first-child {
-          margin-left: 0;
-        }
         .links {
           font-size: 11px;
           color: #666;
@@ -299,6 +298,7 @@ function generateHTMLContent(resumeData, font) {
           float: right;
         }
         .bullet-point {
+          margin-left: 20px;
           margin-top: 4px;
           font-size: 12px;
           line-height: 1.5;
@@ -331,12 +331,12 @@ function generateHTMLContent(resumeData, font) {
           }
           ${
             resumeData.personalInfo.phone
-              ? `<span>•</span><span>${resumeData.personalInfo.phone}</span>`
+              ? `<span>|</span><span>${resumeData.personalInfo.phone}</span>`
               : ""
           }
           ${
             resumeData.personalInfo.location
-              ? `<span>•</span><span>${resumeData.personalInfo.location}</span>`
+              ? `<span>|</span><span>${resumeData.personalInfo.location}</span>`
               : ""
           }
         </div>
@@ -401,7 +401,9 @@ function generateHTMLContent(resumeData, font) {
               <div class="entry-date">${formatDate(exp.startDate)} - ${
                 exp.isCurrentRole ? "Present" : formatDate(exp.endDate)
               }</div>
-              <div class="entry-subtitle">${exp.company}</div>
+              <div class="entry-subtitle">${exp.company}${
+                exp.location ? ` | ${exp.location}` : ""
+              }</div>
               ${
                 exp.bullets && exp.bullets.length > 0
                   ? exp.bullets
@@ -480,8 +482,8 @@ function generateHTMLContent(resumeData, font) {
               (cert) => `
             <div class="entry">
               <div class="entry-title">${cert.title}</div>
-              <div class="entry-date">${formatDate(cert.date)}</div>
               <div class="entry-subtitle">${cert.issuer}</div>
+              <div class="entry-date">${formatDate(cert.date)}</div>
             </div>
           `
             )
