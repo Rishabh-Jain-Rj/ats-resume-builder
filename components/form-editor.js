@@ -227,7 +227,7 @@ export default function FormEditor({ data, onDataUpdate }) {
           type="text"
           value={data.personalInfo.fullName}
           onChange={(e) => handlePersonalInfoChange("fullName", e.target.value)}
-          className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3  text-sm py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="John Doe"
         />
       </div>
@@ -239,7 +239,7 @@ export default function FormEditor({ data, onDataUpdate }) {
           type="email"
           value={data.personalInfo.email}
           onChange={(e) => handlePersonalInfoChange("email", e.target.value)}
-          className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border text-sm border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="john@example.com"
         />
       </div>
@@ -251,7 +251,7 @@ export default function FormEditor({ data, onDataUpdate }) {
           type="tel"
           value={data.personalInfo.phone}
           onChange={(e) => handlePersonalInfoChange("phone", e.target.value)}
-          className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border text-sm border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="+1 (555) 123-4567"
         />
       </div>
@@ -263,7 +263,7 @@ export default function FormEditor({ data, onDataUpdate }) {
           type="text"
           value={data.personalInfo.location}
           onChange={(e) => handlePersonalInfoChange("location", e.target.value)}
-          className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="New York, NY"
         />
       </div>
@@ -275,7 +275,7 @@ export default function FormEditor({ data, onDataUpdate }) {
           type="url"
           value={data.personalInfo.linkedin || ""}
           onChange={(e) => handlePersonalInfoChange("linkedin", e.target.value)}
-          className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border text-sm border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="https://linkedin.com/in/yourprofile"
         />
       </div>
@@ -287,7 +287,7 @@ export default function FormEditor({ data, onDataUpdate }) {
           type="url"
           value={data.personalInfo.github || ""}
           onChange={(e) => handlePersonalInfoChange("github", e.target.value)}
-          className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border text-sm border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="https://github.com/yourprofile"
         />
       </div>
@@ -299,7 +299,7 @@ export default function FormEditor({ data, onDataUpdate }) {
           type="url"
           value={data.personalInfo.website || ""}
           onChange={(e) => handlePersonalInfoChange("website", e.target.value)}
-          className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border text-sm border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="https://yourportfolio.com"
         />
       </div>
@@ -310,7 +310,7 @@ export default function FormEditor({ data, onDataUpdate }) {
         <textarea
           value={data.personalInfo.summary}
           onChange={(e) => handlePersonalInfoChange("summary", e.target.value)}
-          className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          className="w-full px-3 py-2 border text-sm border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
           rows="4"
           placeholder="Brief overview of your professional background and goals..."
         />
@@ -745,36 +745,34 @@ export default function FormEditor({ data, onDataUpdate }) {
   );
 
   return (
-    <div className="p-6">
-      {/* Editor Mode Toggle */}
-      <div className="flex gap-2 mb-6 border-b border-slate-200">
+    <div className="px-5 py-4">
+      <div className="border-b border-slate-200 flex gap-1 mb-2">
         <button
           onClick={() => setEditorMode("form")}
-          className={`px-4 py-2 font-medium transition-colors cursor-pointer ${
+          className={`px-3 py-2 text-sm font-medium cursor-pointer border-b-2 ${
             editorMode === "form"
-              ? "border-b-2 border-blue-600 text-blue-600"
-              : "border-b-2 border-transparent text-slate-600 hover:text-slate-900"
+              ? "border-blue-600 text-blue-600"
+              : "border-transparent text-slate-600 hover:text-slate-900"
           }`}
         >
           Form Editor
         </button>
         <button
           onClick={() => setEditorMode("json")}
-          className={`px-4 py-2 font-medium transition-colors cursor-pointer ${
+          className={`px-3 py-2 text-sm font-medium cursor-pointer border-b-2 ${
             editorMode === "json"
-              ? "border-b-2 border-blue-600 text-blue-600"
-              : "border-b-2 border-transparent text-slate-600 hover:text-slate-900"
+              ? "border-blue-600 text-blue-600"
+              : "border-transparent text-slate-600 hover:text-slate-900"
           }`}
         >
           JSON Editor
         </button>
       </div>
 
-      {/* Form Mode */}
       {editorMode === "form" && (
         <>
           {/* Tabs */}
-          <div className="flex gap-2 mb-6 border-b border-slate-200 overflow-x-auto">
+          <div className="border-b border-slate-200 flex gap-1 mb-5 overflow-x-auto">
             {[
               { id: "personal", label: "Personal" },
               { id: "experience", label: "Work Experience" },
@@ -786,7 +784,7 @@ export default function FormEditor({ data, onDataUpdate }) {
               <button
                 key={tab.id}
                 onClick={() => handleTabChange(tab.id)}
-                className={`px-4 py-2 font-medium whitespace-nowrap border-b-2 transition-colors cursor-pointer ${
+                className={`px-3 py-2 text-sm font-medium border-b-2 cursor-pointer whitespace-nowrap ${
                   activeTab === tab.id
                     ? "border-blue-600 text-blue-600"
                     : "border-transparent text-slate-600 hover:text-slate-900"
@@ -824,7 +822,7 @@ export default function FormEditor({ data, onDataUpdate }) {
           <textarea
             value={jsonText}
             onChange={(e) => handleJsonChange(e.target.value)}
-            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-xs resize-none"
+            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm resize-none"
             rows="20"
             spellCheck="false"
           />

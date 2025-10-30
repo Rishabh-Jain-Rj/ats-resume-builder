@@ -28,7 +28,7 @@ export default function ResumePreview({ data, template = "ats-friendly" }) {
 
   return (
     <div
-      className="max-w-4xl mx-auto bg-white p-8 sm:p-12 text-slate-900 font-serif print:p-0"
+      className="max-w-4xl mx-auto bg-white shadow-sm rounded-md p-8 sm:p-12 text-slate-900 font-serif print:p-0"
       style={{ lineHeight: "1.25" }}
     >
       <div className="mb-6 pb-4 border-b-2 border-slate-300">

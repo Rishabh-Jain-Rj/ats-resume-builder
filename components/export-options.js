@@ -265,6 +265,9 @@ function generateHTMLContent(resumeData, font) {
         .contact span {
           margin: 0 4px;
         }
+        .contact span:first-child {
+          margin: 0;
+        }
         .links {
           font-size: 11px;
           color: #666;
@@ -298,7 +301,6 @@ function generateHTMLContent(resumeData, font) {
           float: right;
         }
         .bullet-point {
-          margin-left: 20px;
           margin-top: 4px;
           font-size: 12px;
           line-height: 1.5;
