@@ -208,6 +208,14 @@ export default function ResumePreview({ data, template = "ats-friendly" }) {
                     {edu.field}
                   </p>
                 )}
+                {edu.score && (
+                  <p
+                    className="text-xs text-slate-700"
+                    style={{ fontSize: "11px" }}
+                  >
+                    Score: {edu.score}
+                  </p>
+                )}
               </div>
             ))}
           </div>

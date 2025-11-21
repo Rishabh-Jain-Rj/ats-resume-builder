@@ -8,6 +8,7 @@ import ResumePreview from "@/components/resume-preview";
 import ATSIndicator from "@/components/ats-indicator";
 import ExportOptions from "@/components/export-options";
 import { FiDownload, FiRotateCcw } from "react-icons/fi";
+import { FiTrash2 } from "react-icons/fi";
 import ConfirmPopup from "@/components/confirm-popup";
 
 export default function Home() {
@@ -18,6 +19,7 @@ export default function Home() {
   const [currentView, setCurrentView] = useState("form");
   const [isSaved, setIsSaved] = useState(true);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
 
   useEffect(() => {
     const savedData = loadResumeData();
@@ -45,6 +47,29 @@ export default function Home() {
     localStorage.removeItem("resumeData");
     setIsSaved(true);
     setShowResetConfirm(false);
+  };
+
+  const handleClearData = () => {
+    setResumeData({
+      personalInfo: {
+        fullName: "",
+        email: "",
+        phone: "",
+        location: "",
+        linkedin: "",
+        github: "",
+        website: "",
+        summary: "",
+      },
+      experience: [],
+      education: [],
+      projects: [],
+      certifications: [],
+      skills: [],
+    });
+    localStorage.removeItem("resumeData");
+    setIsSaved(true);
+    setShowClearConfirm(false); // <-- Close popup!
   };
 
   const displayHeaderUI = () => (
@@ -99,6 +124,14 @@ export default function Home() {
           >
             <FiRotateCcw size={18} />
             <span className="hidden sm:inline">Reset</span>
+          </button>
+          <button
+            onClick={() => setShowClearConfirm(true)}
+            className="px-4 py-2 bg-yellow-500 cursor-pointer text-white rounded-lg font-semibold text-sm flex items-center gap-1"
+            title="Clear all data"
+          >
+            <FiTrash2 size={18} />
+            <span className="hidden sm:inline">Clear Data</span>
           </button>
         </div>
       </nav>
@@ -193,6 +226,15 @@ export default function Home() {
           isDangerous={true}
           onConfirm={handleReset}
           onCancel={() => setShowResetConfirm(false)}
+        />
+      )}
+      {showClearConfirm && (
+        <ConfirmPopup
+          title="Clear All Data?"
+          message="This will erase all resume fields and leave everything empty. This action cannot be undone."
+          isDangerous={true}
+          onConfirm={handleClearData}
+          onCancel={() => setShowClearConfirm(false)}
         />
       )}
 

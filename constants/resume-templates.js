@@ -83,6 +83,7 @@ export const DEFAULT_RESUME_DATA = {
       startDate: "2012-09",
       endDate: "2016-06",
       isCurrentRole: false,
+      score: "8.6 CGPA",
     },
   ],
   projects: [

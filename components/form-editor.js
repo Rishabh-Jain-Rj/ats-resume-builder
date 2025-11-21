@@ -135,6 +135,7 @@ export default function FormEditor({ data, onDataUpdate }) {
           endDate: "",
           bullets: [],
           isCurrentRole: false,
+          score: "",
         },
       ],
     };
@@ -507,6 +508,16 @@ export default function FormEditor({ data, onDataUpdate }) {
               className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
               placeholder="Field of Study"
             />
+            <input
+              type="text"
+              value={edu.score || ""}
+              onChange={(e) =>
+                handleEducationChange(index, "score", e.target.value)
+              }
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              placeholder="Score (e.g., 8.5 CGPA or 75%)"
+            />
+
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <label className="block text-xs font-medium text-slate-700 mb-1">

@@ -23,6 +23,10 @@ export default function ExportOptions({
     const fileName = resumeData.personalInfo.fullName || "resume";
     await generatePDFFromHTML(htmlContent, fileName);
     onClose();
+    // const previewWindow = window.open("", "_blank");
+    // const htmlContent = generateHTMLContent(resumeData, font);
+    // previewWindow.document.write(htmlContent);
+    // previewWindow.document.close();
   };
 
   const handleDownloadHTML = () => {
@@ -164,6 +168,9 @@ function generatePlainText(resumeData) {
       const endDate = edu.isCurrentRole ? "Present" : edu.endDate;
       text += `${edu.startDate} - ${endDate}\n`;
       if (edu.field) text += `${edu.field}\n`;
+      if (edu.score) {
+        text += `Score: ${edu.score}\n`;
+      }
       text += "\n";
     });
   }
@@ -204,10 +211,11 @@ function generatePlainText(resumeData) {
   return text;
 }
 
-function generateHTMLContent(resumeData, font) {
+function generateHTMLContent(resumeData, font = "Calibri, Arial, sans-serif") {
   const formatDate = (dateString) => {
     if (!dateString) return "";
     const [year, month] = dateString.split("-");
+    if (!year || !month) return dateString;
     const date = new Date(year, month - 1);
     return date.toLocaleDateString("en-US", {
       year: "numeric",
@@ -215,311 +223,343 @@ function generateHTMLContent(resumeData, font) {
     });
   };
 
-  return `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>${resumeData.personalInfo.fullName} - Resume</title>
-      <style>
-        * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-        }
-        body {
-          font-family: Calibri, Arial, sans-serif;
-          line-height: 1.6;
-          color: #333;
-          padding: 40px;
-          max-width: 900px;
-          margin: 0 auto;
-        }
-        h1 {
-          font-size: 32px;
-          margin-bottom: 8px;
-          color: #000;
-        }
-        h2 {
-          font-size: 14px;
-          margin-top: 20px;
-          margin-bottom: 12px;
-          text-transform: uppercase;
-          letter-spacing: 1px;
-          color: #000;
-          border-bottom: 2px solid #333;
-          padding-bottom: 8px;
-          font-weight: bold;
-        }
-        .header {
-          margin-bottom: 24px;
-          border-bottom: 2px solid #333;
-          padding-bottom: 16px;
-        }
-        .contact {
-          font-size: 12px;
-          color: #666;
-          margin-top: 4px;
-        }
-        .contact span {
-          margin: 0 4px;
-        }
-        .contact span:first-child {
-          margin: 0;
-        }
-        .links {
-          font-size: 11px;
-          color: #666;
-          margin-top: 4px;
-        }
-        .summary {
-          margin-bottom: 20px;
-          font-size: 13px;
-          line-height: 1.6;
-        }
-        .section {
-          margin-bottom: 20px;
-        }
-        .entry {
-          margin-bottom: 16px;
-        }
-        .entry-title {
-          font-weight: bold;
-          font-size: 13px;
-          color: #000;
-        }
-        .entry-subtitle {
-          font-size: 12px;
-          color: #666;
-          font-weight: bold;
-          margin-top: 2px;
-        }
-        .entry-date {
-          font-size: 11px;
-          color: #666;
-          float: right;
-        }
-        .bullet-point {
-          margin-top: 4px;
-          font-size: 12px;
-          line-height: 1.5;
-        }
-        .skills-category {
-          margin-bottom: 8px;
-        }
-        .skills-category-name {
-          font-size: 11px;
-          font-weight: bold;
-          color: #000;
-        }
-        .skills-list {
-          font-size: 12px;
-          margin-top: 2px;
-        }
-        @media print {
-          body { padding: 0; }
-        }
-      </style>
-    </head>
-    <body>
-      <div class="header">
-        <h1>${resumeData.personalInfo.fullName}</h1>
-        <div class="contact">
-          ${
-            resumeData.personalInfo.email
-              ? `<span>${resumeData.personalInfo.email}</span>`
-              : ""
-          }
-          ${
-            resumeData.personalInfo.phone
-              ? `<span>|</span><span>${resumeData.personalInfo.phone}</span>`
-              : ""
-          }
-          ${
-            resumeData.personalInfo.location
-              ? `<span>|</span><span>${resumeData.personalInfo.location}</span>`
-              : ""
-          }
-        </div>
-        ${
-          resumeData.personalInfo.linkedin ||
-          resumeData.personalInfo.github ||
-          resumeData.personalInfo.website
-            ? `
-          <div class="links">
-            ${
-              resumeData.personalInfo.linkedin
-                ? `LinkedIn: <a href="${resumeData.personalInfo.linkedin}">${resumeData.personalInfo.linkedin}</a>`
-                : ""
-            }
-            ${
-              resumeData.personalInfo.github
-                ? `${
-                    resumeData.personalInfo.linkedin ? " | " : ""
-                  }GitHub: <a href="${resumeData.personalInfo.github}">${
-                    resumeData.personalInfo.github
-                  }</a>`
-                : ""
-            }
-            ${
-              resumeData.personalInfo.website
-                ? `${
-                    resumeData.personalInfo.linkedin ||
-                    resumeData.personalInfo.github
-                      ? " | "
-                      : ""
-                  }Portfolio: <a href="${resumeData.personalInfo.website}">${
-                    resumeData.personalInfo.website
-                  }</a>`
-                : ""
-            }
-          </div>
-        `
-            : ""
-        }
-      </div>
+  // Group skills
+  const skillsByCategory = {};
+  (resumeData.skills || []).forEach((skill) => {
+    if (!skillsByCategory[skill.category])
+      skillsByCategory[skill.category] = [];
+    skillsByCategory[skill.category].push(skill.name);
+  });
 
-      ${
-        resumeData.personalInfo.summary
-          ? `
-        <div class="summary">
-          ${resumeData.personalInfo.summary}
-        </div>
-      `
-          : ""
+  return `
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>${resumeData.personalInfo.fullName} - Resume</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+      body {
+        font-family: ${font};
+        font-size: 13px;
+        color: #0f172a;
+        line-height: 1.35;
+        margin: 0;
+        padding: 28px;
+        max-width: 820px;
       }
 
+      h1 {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 6px;
+      }
+
+      h2 {
+        font-size: 14px;
+        margin-top: 24px;
+        margin-bottom: 8px;
+        font-weight: bold;
+        text-transform: uppercase;
+        border-bottom: 1px solid #cbd5e1;
+        padding-bottom: 6px;
+        letter-spacing: 0.5px;
+        page-break-after: avoid;
+      }
+
+      .contact, .links {
+        font-size: 11px;
+        color: #334155;
+        margin-bottom: 4px;
+      }
+
+      .links a {
+        color: #2563eb;
+        text-decoration: none;
+      }
+
+      .summary {
+        font-size: 12px;
+        margin-top: 8px;
+        text-align: justify;
+      }
+
+      .entry {
+        margin-bottom: 16px;
+        page-break-inside: avoid;
+      }
+
+      .entry-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+      }
+
+      .entry-title {
+        font-size: 13.5px;
+        font-weight: bold;
+        color: #0f172a;
+      }
+
+      .entry-date {
+        font-size: 11px;
+        color: #475569;
+        white-space: nowrap;
+      }
+
+      .entry-subtitle {
+        font-size: 11.5px;
+        font-weight: 600;
+        color: #334155;
+        margin-top: 2px;
+      }
+
+      /* MANUAL BULLET SYSTEM */
+      .bullet-line {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        line-height: 1.35;
+        page-break-inside: avoid;
+      }
+
+      .bullet {
+        font-size: 14px;
+        color: #475569;
+        display: inline-block;
+      }
+
+      .bullet-text {
+        flex: 1;
+        font-size: 12px;
+        color: #0f172a;
+        line-height: 1.35;
+      }
+
+      .project-desc {
+        font-size: 12px;
+        margin-top: 2px;
+      }
+
+      .project-tech {
+        font-size: 11px;
+        margin-top: 3px;
+        color: #334155;
+      }
+
+      .skills-category {
+        font-weight: bold;
+        font-size: 12px;
+        margin-top: 4px;
+      }
+
+      .skills-list {
+        font-size: 12px;
+        color: #0f172a;
+        margin-bottom: 6px;
+      }
+
+      @media print {
+        * { -webkit-print-color-adjust: exact; }
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <!-- Header -->
+    <h1>${resumeData.personalInfo.fullName}</h1>
+
+    <div class="contact">
+      ${resumeData.personalInfo.email || ""} 
       ${
-        resumeData.experience && resumeData.experience.length > 0
-          ? `
-        <h2>Work Experience</h2>
-        <div class="section">
+        resumeData.personalInfo.phone
+          ? " | " + resumeData.personalInfo.phone
+          : ""
+      }
+      ${
+        resumeData.personalInfo.location
+          ? " | " + resumeData.personalInfo.location
+          : ""
+      }
+    </div>
+
+    <div class="links">
+      ${
+        resumeData.personalInfo.linkedin
+          ? `LinkedIn: <a>${resumeData.personalInfo.linkedin}</a>`
+          : ""
+      }
+      ${
+        resumeData.personalInfo.github
+          ? ` | GitHub: <a>${resumeData.personalInfo.github}</a>`
+          : ""
+      }
+      ${
+        resumeData.personalInfo.website
+          ? ` | Portfolio: <a>${resumeData.personalInfo.website}</a>`
+          : ""
+      }
+    </div>
+
+    <!-- Summary -->
+    ${
+      resumeData.personalInfo.summary
+        ? `
+      <h2>Summary</h2>
+      <div class="summary">${resumeData.personalInfo.summary}</div>
+    `
+        : ""
+    }
+
+    <!-- Work Experience -->
+    ${
+      resumeData.experience?.length
+        ? `
+          <h2>Work Experience</h2>
           ${resumeData.experience
             .map(
               (exp) => `
-            <div class="entry">
-              <div class="entry-title">${exp.position}</div>
-              <div class="entry-date">${formatDate(exp.startDate)} - ${
+              <div class="entry">
+
+                <div class="entry-header">
+                  <div class="entry-title">${exp.position}</div>
+                  <div class="entry-date">${formatDate(exp.startDate)} — ${
                 exp.isCurrentRole ? "Present" : formatDate(exp.endDate)
               }</div>
-              <div class="entry-subtitle">${exp.company}${
-                exp.location ? ` | ${exp.location}` : ""
+                </div>
+
+                <div class="entry-subtitle">${exp.company}${
+                exp.location ? " | " + exp.location : ""
               }</div>
-              ${
-                exp.bullets && exp.bullets.length > 0
-                  ? exp.bullets
-                      .map(
-                        (bullet) =>
-                          `<div class="bullet-point">• ${bullet}</div>`
-                      )
-                      .join("")
-                  : ""
-              }
-            </div>
-          `
+
+                ${
+                  exp.bullets?.length
+                    ? exp.bullets
+                        .map(
+                          (b) => `
+                    <div class="bullet-line">
+                      <span class="bullet">•</span>
+                      <span class="bullet-text">${b}</span>
+                    </div>
+                  `
+                        )
+                        .join("")
+                    : ""
+                }
+
+              </div>
+            `
             )
             .join("")}
-        </div>
-      `
-          : ""
-      }
+        `
+        : ""
+    }
 
-      ${
-        resumeData.education && resumeData.education.length > 0
-          ? `
-        <h2>Education</h2>
-        <div class="section">
+    <!-- Education -->
+    ${
+      resumeData.education?.length
+        ? `
+          <h2>Education</h2>
           ${resumeData.education
             .map(
               (edu) => `
-            <div class="entry">
-              <div class="entry-title">${edu.degree}</div>
-              <div class="entry-date">${formatDate(edu.startDate)} - ${
+              <div class="entry">
+                <div class="entry-header">
+                  <div class="entry-title">${edu.degree}</div>
+                  <div class="entry-date">${formatDate(edu.startDate)} — ${
                 edu.isCurrentRole ? "Present" : formatDate(edu.endDate)
               }</div>
+                </div>
+
               <div class="entry-subtitle">${edu.school}</div>
-              ${edu.field ? `<div class="bullet-point">${edu.field}</div>` : ""}
-            </div>
+
+              ${
+                edu.field
+                  ? `<div style="font-size:12px;margin-top:2px;color:#334155">${edu.field}</div>`
+                  : ""
+              }
+
+              ${
+                edu.score
+                  ? `<div style="font-size:11px;color:#475569;margin-top:1px">Score: ${edu.score}</div>`
+                  : ""
+              }
+              </div>
           `
             )
             .join("")}
-        </div>
-      `
-          : ""
-      }
+        `
+        : ""
+    }
 
-      ${
-        resumeData.projects && resumeData.projects.length > 0
-          ? `
-        <h2>Projects</h2>
-        <div class="section">
+    <!-- Projects -->
+    ${
+      resumeData.projects?.length
+        ? `
+          <h2>Projects</h2>
           ${resumeData.projects
             .map(
               (proj) => `
             <div class="entry">
               <div class="entry-title">${proj.name}</div>
-              <div class="bullet-point">${proj.description}</div>
+              <div class="project-desc">${proj.description}</div>
+
               ${
                 proj.technologies
-                  ? `<div class="bullet-point">Technologies: ${proj.technologies}</div>`
+                  ? `<div class="project-tech"><strong>Technologies:</strong> ${proj.technologies}</div>`
                   : ""
               }
             </div>
-          `
+            `
             )
             .join("")}
-        </div>
-      `
-          : ""
-      }
+        `
+        : ""
+    }
 
-      ${
-        resumeData.certifications && resumeData.certifications.length > 0
-          ? `
-        <h2>Certifications & Achievements</h2>
-        <div class="section">
+    <!-- Certifications -->
+    ${
+      resumeData.certifications?.length
+        ? `
+          <h2>Certifications & Achievements</h2>
           ${resumeData.certifications
             .map(
               (cert) => `
             <div class="entry">
-              <div class="entry-title">${cert.title}</div>
-              <div class="entry-subtitle">${cert.issuer}</div>
-              <div class="entry-date">${formatDate(cert.date)}</div>
-            </div>
-          `
-            )
-            .join("")}
-        </div>
-      `
-          : ""
-      }
-
-      ${
-        resumeData.skills && resumeData.skills.length > 0
-          ? `
-        <h2>Skills</h2>
-        <div class="section">
-          ${Array.from(new Set(resumeData.skills.map((s) => s.category)))
-            .map(
-              (category) => `
-            <div class="skills-category">
-              <div class="skills-category-name">${category}</div>
-              <div class="skills-list">
-                ${resumeData.skills
-                  .filter((s) => s.category === category)
-                  .map((s) => s.name)
-                  .join(", ")}
+              <div class="entry-header">
+                <div class="entry-title">${cert.title}</div>
+                <div class="entry-date">${formatDate(cert.date)}</div>
               </div>
+              <div class="entry-subtitle">${cert.issuer}</div>
             </div>
           `
             )
             .join("")}
-        </div>
-      `
-          : ""
-      }
-    </body>
-    </html>
+        `
+        : ""
+    }
+
+    <!-- Skills -->
+    ${
+      resumeData.skills?.length
+        ? `
+          <h2>Skills</h2>
+          ${Object.entries(skillsByCategory)
+            .map(
+              ([category, list]) => `
+              <div class="skills-category">${category}</div>
+              <div class="skills-list">${list.join(", ")}</div>
+            `
+            )
+            .join("")}
+        `
+        : ""
+    }
+
+  </body>
+  </html>
   `;
 }
