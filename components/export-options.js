@@ -181,6 +181,7 @@ function generatePlainText(resumeData) {
       text += `${proj.name}\n`;
       text += `${proj.description}\n`;
       if (proj.technologies) text += `Technologies: ${proj.technologies}\n`;
+      if (proj.link) text += `Live Demo: ${proj.link}\n`;
       text += "\n";
     });
   }
@@ -342,11 +343,30 @@ function generateHTMLContent(resumeData, font = "Calibri, Arial, sans-serif") {
         font-size: 12px;
         margin-top: 2px;
       }
-
       .project-tech {
         font-size: 11px;
         margin-top: 3px;
         color: #334155;
+      }
+      .project-link {
+        font-size: 11px;
+        margin-top: 3px;
+        color: #334155;
+      }
+      .project-link a {
+        color: #2563eb;
+        word-break: break-all;
+        text-decoration: none;
+      }
+      .field {
+        font-size: 12px;
+        margin-top: 2px;
+        color: #334155;
+      }
+      .score {
+        font-size: 11px;
+        color: #475569;
+        margin-top: 1px;
       }
 
       .skills-category {
@@ -368,7 +388,6 @@ function generateHTMLContent(resumeData, font = "Calibri, Arial, sans-serif") {
   </head>
 
   <body>
-
     <!-- Header -->
     <h1>${resumeData.personalInfo.fullName}</h1>
 
@@ -389,17 +408,17 @@ function generateHTMLContent(resumeData, font = "Calibri, Arial, sans-serif") {
     <div class="links">
       ${
         resumeData.personalInfo.linkedin
-          ? `LinkedIn: <a>${resumeData.personalInfo.linkedin}</a>`
+          ? `LinkedIn: <a  href="${resumeData.personalInfo.linkedin}" target="_blank" rel="noopener noreferrer">${resumeData.personalInfo.linkedin}</a>`
           : ""
       }
       ${
         resumeData.personalInfo.github
-          ? ` | GitHub: <a>${resumeData.personalInfo.github}</a>`
+          ? ` | GitHub: <a href="${resumeData.personalInfo.github}" target="_blank" rel="noopener noreferrer">${resumeData.personalInfo.github}</a>`
           : ""
       }
       ${
         resumeData.personalInfo.website
-          ? ` | Portfolio: <a>${resumeData.personalInfo.website}</a>`
+          ? ` | Portfolio: <a href="${resumeData.personalInfo.website}" target="_blank" rel="noopener noreferrer">${resumeData.personalInfo.website}</a>`
           : ""
       }
     </div>
@@ -408,9 +427,9 @@ function generateHTMLContent(resumeData, font = "Calibri, Arial, sans-serif") {
     ${
       resumeData.personalInfo.summary
         ? `
-      <h2>Summary</h2>
-      <div class="summary">${resumeData.personalInfo.summary}</div>
-    `
+        <h2>Summary</h2>
+        <div class="summary">${resumeData.personalInfo.summary}</div>
+      `
         : ""
     }
 
@@ -474,21 +493,11 @@ function generateHTMLContent(resumeData, font = "Calibri, Arial, sans-serif") {
               }</div>
                 </div>
 
-              <div class="entry-subtitle">${edu.school}</div>
-
-              ${
-                edu.field
-                  ? `<div style="font-size:12px;margin-top:2px;color:#334155">${edu.field}</div>`
-                  : ""
-              }
-
-              ${
-                edu.score
-                  ? `<div style="font-size:11px;color:#475569;margin-top:1px">Score: ${edu.score}</div>`
-                  : ""
-              }
+                <div class="entry-subtitle">${edu.school}</div>
+                ${edu.field ? `<div class="field">${edu.field}</div>` : ""}
+                ${edu.score ? `<div class="score">${edu.score}</div>` : ""}
               </div>
-          `
+            `
             )
             .join("")}
         `
@@ -503,17 +512,21 @@ function generateHTMLContent(resumeData, font = "Calibri, Arial, sans-serif") {
           ${resumeData.projects
             .map(
               (proj) => `
-            <div class="entry">
-              <div class="entry-title">${proj.name}</div>
-              <div class="project-desc">${proj.description}</div>
-
-              ${
-                proj.technologies
-                  ? `<div class="project-tech"><strong>Technologies:</strong> ${proj.technologies}</div>`
-                  : ""
-              }
-            </div>
-            `
+              <div class="entry">
+                <div class="entry-title">${proj.name}</div>
+                <div class="project-desc">${proj.description}</div>
+                ${
+                  proj.technologies
+                    ? `<div class="project-tech"><strong>Technologies:</strong> ${proj.technologies}</div>`
+                    : ""
+                }
+                ${
+                  proj.link
+                    ? `<div class="project-link"><strong>Live Demo:</strong> <a href="${proj.link}" target="_blank" rel="noopener noreferrer">${proj.link}</a></div>`
+                    : ""
+                }
+              </div>
+              `
             )
             .join("")}
         `

@@ -1,6 +1,6 @@
 "use client";
 
-export default function ResumePreview({ data, template = "ats-friendly" }) {
+export default function ResumePreview({ data }) {
   const formatDate = (dateString) => {
     if (!dateString) return "";
     const [year, month] = dateString.split("-");
@@ -213,7 +213,7 @@ export default function ResumePreview({ data, template = "ats-friendly" }) {
                     className="text-xs text-slate-700"
                     style={{ fontSize: "11px" }}
                   >
-                    Score: {edu.score}
+                    {edu.score}
                   </p>
                 )}
               </div>
@@ -233,19 +233,9 @@ export default function ResumePreview({ data, template = "ats-friendly" }) {
           <div className="space-y-4">
             {data.projects.map((project, idx) => (
               <div key={idx}>
-                <div className="flex justify-between items-start mb-1">
-                  <h3 className="font-bold" style={{ fontSize: "13.5px" }}>
-                    {project.name}
-                  </h3>
-                  {project.link && (
-                    <span
-                      className="text-xs text-slate-600"
-                      style={{ fontSize: "11px" }}
-                    >
-                      {project.link}
-                    </span>
-                  )}
-                </div>
+                <h3 className="font-bold" style={{ fontSize: "13.5px" }}>
+                  {project.name}
+                </h3>
                 <p
                   className="leading-relaxed"
                   style={{ fontSize: "12px", lineHeight: "1.3" }}
@@ -259,6 +249,22 @@ export default function ResumePreview({ data, template = "ats-friendly" }) {
                   >
                     <span className="font-semibold">Technologies:</span>{" "}
                     {project.technologies}
+                  </p>
+                )}
+                {project.link && (
+                  <p
+                    className="text-xs text-slate-700 mt-1"
+                    style={{ fontSize: "11px" }}
+                  >
+                    <span className="font-semibold">Live Demo:</span>{" "}
+                    <a
+                      href={project.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
+                    >
+                      {project.link}
+                    </a>
                   </p>
                 )}
               </div>

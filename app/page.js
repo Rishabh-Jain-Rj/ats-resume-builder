@@ -74,7 +74,7 @@ export default function Home() {
 
   const displayHeaderUI = () => (
     <header className="sticky top-0 z-50 bg-white/90  shadow-sm backdrop-blur-md">
-      <nav className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
+      <nav className="max-w-7xl mx-auto flex items-center justify-between px-4 lg:px-10 py-3">
         <div>
           <h1 className="text-xl font-bold text-transparent bg-clip-text  bg-blue-500 ">
             ResumeCrafter
