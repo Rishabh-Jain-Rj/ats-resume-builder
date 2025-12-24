@@ -16,7 +16,7 @@ Experience all features instantly - no signup required!
 
 | Package                                                   | Version | Purpose         |
 | --------------------------------------------------------- | ------- | --------------- |
-| [Next.js](https://nextjs.org/)                            | 16.0.0  | React framework |
+| [Next.js](https://nextjs.org/)                            | ^16.1.1 | React framework |
 | [React](https://react.dev/)                               | 19.2.0  | UI library      |
 | [Tailwind CSS](https://tailwindcss.com/)                  | 4.x     | Styling         |
 | [html2pdf.js](https://github.com/eKoopmans/html2pdf.js)   | 0.12.1  | PDF export      |
