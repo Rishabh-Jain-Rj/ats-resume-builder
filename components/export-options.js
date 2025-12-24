@@ -254,17 +254,17 @@ function generateHTMLContent(resumeData, font = "Calibri, Arial, sans-serif") {
       h1 {
         font-size: 24px;
         font-weight: bold;
-        margin-bottom: 6px;
+        margin: 0 0 4px 0;
+        padding: 0;
       }
 
       h2 {
         font-size: 14px;
-        margin-top: 24px;
-        margin-bottom: 8px;
+        margin: 10px 0 6px 0;
+        padding: 0 0 7px 0;
         font-weight: bold;
         text-transform: uppercase;
         border-bottom: 1px solid #cbd5e1;
-        padding-bottom: 6px;
         letter-spacing: 0.5px;
         page-break-after: avoid;
       }
@@ -272,7 +272,13 @@ function generateHTMLContent(resumeData, font = "Calibri, Arial, sans-serif") {
       .contact, .links {
         font-size: 11px;
         color: #334155;
-        margin-bottom: 4px;
+        margin: 0;
+        padding: 0;
+        line-height: 1.25;
+      }
+
+      .links {
+        margin-top: 2px;
       }
 
       .links a {
@@ -282,12 +288,15 @@ function generateHTMLContent(resumeData, font = "Calibri, Arial, sans-serif") {
 
       .summary {
         font-size: 12px;
-        margin-top: 8px;
+        margin: 4px 0 0 0;
+        padding: 0;
         text-align: justify;
+        line-height: 1.35;
       }
 
       .entry {
-        margin-bottom: 16px;
+        margin: 0 0 10px 0;
+        padding: 0;
         page-break-inside: avoid;
       }
 
@@ -295,34 +304,45 @@ function generateHTMLContent(resumeData, font = "Calibri, Arial, sans-serif") {
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
+        margin: 0;
+        padding: 0;
       }
 
       .entry-title {
         font-size: 13.5px;
         font-weight: bold;
         color: #0f172a;
+        margin: 0;
+        padding: 0;
       }
 
       .entry-date {
         font-size: 11px;
         color: #475569;
         white-space: nowrap;
+        margin-left: 10px;
+        text-align: right;
+        margin: 0;
+        padding: 0;
       }
 
       .entry-subtitle {
         font-size: 11.5px;
         font-weight: 600;
         color: #334155;
-        margin-top: 2px;
+        margin: 1px 0 0 0;
+        padding: 0;
       }
 
-      /* MANUAL BULLET SYSTEM */
+      /* MANUAL BULLET SYSTEM - Optimized spacing */
       .bullet-line {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         gap: 6px;
         font-size: 12px;
         line-height: 1.35;
+        margin: 2px 0 0 0;
+        padding: 0;
         page-break-inside: avoid;
       }
 
@@ -330,6 +350,10 @@ function generateHTMLContent(resumeData, font = "Calibri, Arial, sans-serif") {
         font-size: 14px;
         color: #475569;
         display: inline-block;
+        margin: 0;
+        padding: 0;
+        flex-shrink: 0;
+        margin-top: -2px;
       }
 
       .bullet-text {
@@ -337,52 +361,81 @@ function generateHTMLContent(resumeData, font = "Calibri, Arial, sans-serif") {
         font-size: 12px;
         color: #0f172a;
         line-height: 1.35;
+        margin: 0;
+        padding: 0;
       }
 
       .project-desc {
         font-size: 12px;
-        margin-top: 2px;
+        margin: 1px 0 0 0;
+        padding: 0;
+        line-height: 1.35;
       }
+
       .project-tech {
         font-size: 11px;
-        margin-top: 3px;
+        margin: 2px 0 0 0;
+        padding: 0;
         color: #334155;
+        line-height: 1.2;
       }
+
       .project-link {
         font-size: 11px;
-        margin-top: 3px;
+        margin: 2px 0 0 0;
+        padding: 0;
         color: #334155;
+        line-height: 1.2;
       }
+
       .project-link a {
         color: #2563eb;
         word-break: break-all;
         text-decoration: none;
       }
+
       .field {
         font-size: 12px;
-        margin-top: 2px;
+        margin: 1px 0 0 0;
+        padding: 0;
         color: #334155;
       }
+
       .score {
         font-size: 11px;
         color: #475569;
-        margin-top: 1px;
+        margin: 1px 0 0 0;
+        padding: 0;
       }
 
       .skills-category {
         font-weight: bold;
         font-size: 12px;
-        margin-top: 4px;
+        margin: 4px 0 2px 0;
+        padding: 0;
       }
 
       .skills-list {
         font-size: 12px;
         color: #0f172a;
-        margin-bottom: 6px;
+        margin: 0 0 4px 0;
+        padding: 0;
+        line-height: 1.25;
+      }
+
+      /* ATS Optimization: Reduce gaps between sections */
+      .section-container {
+        margin-bottom: 0;
+        padding-bottom: 0;
       }
 
       @media print {
-        * { -webkit-print-color-adjust: exact; }
+        body {
+          padding: 20px;
+        }
+        * {
+          -webkit-print-color-adjust: exact;
+        }
       }
     </style>
   </head>
@@ -392,7 +445,7 @@ function generateHTMLContent(resumeData, font = "Calibri, Arial, sans-serif") {
     <h1>${resumeData.personalInfo.fullName}</h1>
 
     <div class="contact">
-      ${resumeData.personalInfo.email || ""} 
+      ${resumeData.personalInfo.email || ""}
       ${
         resumeData.personalInfo.phone
           ? " | " + resumeData.personalInfo.phone
@@ -408,7 +461,7 @@ function generateHTMLContent(resumeData, font = "Calibri, Arial, sans-serif") {
     <div class="links">
       ${
         resumeData.personalInfo.linkedin
-          ? `LinkedIn: <a  href="${resumeData.personalInfo.linkedin}" target="_blank" rel="noopener noreferrer">${resumeData.personalInfo.linkedin}</a>`
+          ? `LinkedIn: <a href="${resumeData.personalInfo.linkedin}" target="_blank" rel="noopener noreferrer">${resumeData.personalInfo.linkedin}</a>`
           : ""
       }
       ${
@@ -426,34 +479,28 @@ function generateHTMLContent(resumeData, font = "Calibri, Arial, sans-serif") {
     <!-- Summary -->
     ${
       resumeData.personalInfo.summary
-        ? `
-        <h2>Summary</h2>
-        <div class="summary">${resumeData.personalInfo.summary}</div>
-      `
+        ? `<h2>Summary</h2>
+        <div class="summary">${resumeData.personalInfo.summary}</div>`
         : ""
     }
 
     <!-- Work Experience -->
     ${
       resumeData.experience?.length
-        ? `
-          <h2>Work Experience</h2>
+        ? `<h2>Work Experience</h2>
           ${resumeData.experience
             .map(
               (exp) => `
               <div class="entry">
-
                 <div class="entry-header">
                   <div class="entry-title">${exp.position}</div>
                   <div class="entry-date">${formatDate(exp.startDate)} — ${
                 exp.isCurrentRole ? "Present" : formatDate(exp.endDate)
               }</div>
                 </div>
-
                 <div class="entry-subtitle">${exp.company}${
                 exp.location ? " | " + exp.location : ""
               }</div>
-
                 ${
                   exp.bullets?.length
                     ? exp.bullets
@@ -468,20 +515,17 @@ function generateHTMLContent(resumeData, font = "Calibri, Arial, sans-serif") {
                         .join("")
                     : ""
                 }
-
               </div>
             `
             )
-            .join("")}
-        `
+            .join("")}`
         : ""
     }
 
     <!-- Education -->
     ${
       resumeData.education?.length
-        ? `
-          <h2>Education</h2>
+        ? `<h2>Education</h2>
           ${resumeData.education
             .map(
               (edu) => `
@@ -492,23 +536,20 @@ function generateHTMLContent(resumeData, font = "Calibri, Arial, sans-serif") {
                 edu.isCurrentRole ? "Present" : formatDate(edu.endDate)
               }</div>
                 </div>
-
                 <div class="entry-subtitle">${edu.school}</div>
                 ${edu.field ? `<div class="field">${edu.field}</div>` : ""}
                 ${edu.score ? `<div class="score">${edu.score}</div>` : ""}
               </div>
             `
             )
-            .join("")}
-        `
+            .join("")}`
         : ""
     }
 
     <!-- Projects -->
     ${
       resumeData.projects?.length
-        ? `
-          <h2>Projects</h2>
+        ? `<h2>Projects</h2>
           ${resumeData.projects
             .map(
               (proj) => `
@@ -528,16 +569,14 @@ function generateHTMLContent(resumeData, font = "Calibri, Arial, sans-serif") {
               </div>
               `
             )
-            .join("")}
-        `
+            .join("")}`
         : ""
     }
 
     <!-- Certifications -->
     ${
       resumeData.certifications?.length
-        ? `
-          <h2>Certifications & Achievements</h2>
+        ? `<h2>Certifications & Achievements</h2>
           ${resumeData.certifications
             .map(
               (cert) => `
@@ -550,16 +589,14 @@ function generateHTMLContent(resumeData, font = "Calibri, Arial, sans-serif") {
             </div>
           `
             )
-            .join("")}
-        `
+            .join("")}`
         : ""
     }
 
     <!-- Skills -->
     ${
       resumeData.skills?.length
-        ? `
-          <h2>Skills</h2>
+        ? `<h2>Skills</h2>
           ${Object.entries(skillsByCategory)
             .map(
               ([category, list]) => `
@@ -567,8 +604,7 @@ function generateHTMLContent(resumeData, font = "Calibri, Arial, sans-serif") {
               <div class="skills-list">${list.join(", ")}</div>
             `
             )
-            .join("")}
-        `
+            .join("")}`
         : ""
     }
 
