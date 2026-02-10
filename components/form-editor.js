@@ -234,6 +234,21 @@ export default function FormEditor({ data, onDataUpdate }) {
       </div>
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-1">
+          Designation
+        </label>
+        <input
+          type="text"
+          value={data.personalInfo.designation || ""}
+          onChange={(e) =>
+            handlePersonalInfoChange("designation", e.target.value)
+          }
+          className="w-full px-3 text-sm py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Frontend Developer"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-slate-700 mb-1">
           Email
         </label>
         <input
@@ -402,7 +417,7 @@ export default function FormEditor({ data, onDataUpdate }) {
                         handleExperienceChange(
                           index,
                           "isCurrentRole",
-                          e.target.checked
+                          e.target.checked,
                         )
                       }
                       className="cursor-pointer"
@@ -426,7 +441,7 @@ export default function FormEditor({ data, onDataUpdate }) {
                       handleExperienceBulletChange(
                         index,
                         bulletIndex,
-                        e.target.value
+                        e.target.value,
                       )
                     }
                     className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
@@ -554,7 +569,7 @@ export default function FormEditor({ data, onDataUpdate }) {
                         handleEducationChange(
                           index,
                           "isCurrentRole",
-                          e.target.checked
+                          e.target.checked,
                         )
                       }
                       className="cursor-pointer"

@@ -19,12 +19,13 @@ export const RESUME_TEMPLATES = {
 export const DEFAULT_RESUME_DATA = {
   personalInfo: {
     fullName: "Mark Gates",
+    designation: "Frontend Developer",
     email: "Mark123@gmail.com",
     phone: "+123-45678",
     location: "United States",
-    linkedin: "https://linkedin.com/in/markgates",
-    github: "https://github.com/markgates",
-    website: "https://markgates.dev",
+    linkedin: "https://linkedin.com",
+    github: "https://github.com",
+    website: "https://www.example.com",
     summary:
       "Software Developer with over 5 years of experience in designing, developing, and deploying scalable software solutions, currently driving innovation at Meta by enhancing high-traffic applications and integrating cloud services. Recognized for achieving a 30% improvement in performance through codebase optimization while leveraging expertise in programming, cloud computing, and agile methodologies. Demonstrates a proven track record in reducing deployment time by 40% with CI/CD automation and holds multiple project certifications, reinforcing a strong commitment to continuous learning and technical excellence.",
   },

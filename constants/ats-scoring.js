@@ -1,125 +1,113 @@
 export const calculateATSScore = (resumeData) => {
   let score = 0;
-  const breakdown = {
-    contactInfo: 0,
-    summary: 0,
-    experience: 0,
-    education: 0,
-    skills: 0,
-    projects: 0,
-    certifications: 0,
-    formatting: 0,
-  };
 
-  // Contact Information (15 points)
-  const contactFields = ["fullName", "email", "phone", "location"];
-  let contactCount = 0;
-  contactFields.forEach((field) => {
-    if (resumeData.personalInfo?.[field]?.trim()) {
-      contactCount++;
-    }
-  });
-  breakdown.contactInfo = Math.round((contactCount / 4) * 15);
-  score += breakdown.contactInfo;
+  const personal = resumeData.personalInfo || {};
 
-  // Professional Summary (10 points)
-  if (resumeData.personalInfo?.summary?.trim()?.length > 50) {
-    breakdown.summary = 10;
-    score += 10;
-  } else if (resumeData.personalInfo?.summary?.trim()?.length > 0) {
-    breakdown.summary = 5;
-    score += 5;
-  }
+  const contactFields = [
+    personal.fullName,
+    personal.designation,
+    personal.email,
+    personal.phone,
+    personal.location,
+  ];
 
-  // Work Experience (25 points)
-  if (resumeData.experience?.length > 0) {
-    let expScore = 0;
-    let validExperiences = 0;
+  const contactFilled = contactFields.filter((field) => field?.trim()).length;
+
+  score += Math.round((contactFilled / 5) * 15);
+
+  /* ---------- SUMMARY (10) ---------- */
+  const summaryLength = personal.summary?.trim()?.length || 0;
+
+  if (summaryLength > 50) score += 10;
+  else if (summaryLength > 0) score += 5;
+
+  /* ---------- EXPERIENCE (25) ---------- */
+  if (resumeData.experience?.length) {
+    let validExp = 0;
+
     resumeData.experience.forEach((exp) => {
-      const isValidDate = validateDateSequence(
-        exp.startDate,
-        exp.endDate,
-        exp.isCurrentRole
-      );
       if (
         exp.company?.trim() &&
         exp.position?.trim() &&
         exp.bullets?.length > 0 &&
-        isValidDate
+        isValidDate(exp.startDate, exp.endDate, exp.isCurrentRole)
       ) {
-        validExperiences++;
+        validExp++;
       }
     });
-    expScore = Math.min(validExperiences * 8, 25);
-    breakdown.experience = expScore;
-    score += expScore;
+
+    score += Math.min(validExp * 8, 25);
   }
 
-  // Education (15 points)
-  if (resumeData.education?.length > 0) {
-    let eduScore = 0;
-    let validEducations = 0;
+  /* ---------- EDUCATION (15) ---------- */
+  if (resumeData.education?.length) {
+    let validEdu = 0;
+
     resumeData.education.forEach((edu) => {
-      const isValidDate = validateDateSequence(
-        edu.startDate,
-        edu.endDate,
-        edu.isCurrentRole
-      );
-      if (edu.school?.trim() && edu.degree?.trim() && isValidDate) {
-        validEducations++;
+      if (
+        edu.school?.trim() &&
+        edu.degree?.trim() &&
+        isValidDate(edu.startDate, edu.endDate, edu.isCurrentRole)
+      ) {
+        validEdu++;
       }
     });
-    eduScore = Math.min(validEducations * 7, 15);
-    breakdown.education = eduScore;
-    score += eduScore;
+
+    score += Math.min(validEdu * 7, 15);
   }
 
-  // Skills (15 points)
-  if (resumeData.skills?.length >= 10) {
-    breakdown.skills = 15;
-    score += 15;
-  } else if (resumeData.skills?.length >= 5) {
-    breakdown.skills = 10;
-    score += 10;
-  } else if (resumeData.skills?.length > 0) {
-    breakdown.skills = Math.round((resumeData.skills.length / 5) * 10);
-    score += breakdown.skills;
-  }
+  /* ---------- SKILLS (15) ---------- */
+  const skillCount = resumeData.skills?.length || 0;
 
-  // Projects (10 points)
-  if (resumeData.projects?.length > 0) {
-    let projScore = 0;
-    let validProjects = 0;
+  if (skillCount >= 10) score += 15;
+  else if (skillCount >= 5) score += 10;
+  else if (skillCount > 0) score += Math.round((skillCount / 5) * 10);
+
+  /* ---------- PROJECTS (10) ---------- */
+
+  if (resumeData.projects?.length) {
+    let validProj = 0;
+
     resumeData.projects.forEach((proj) => {
       if (
         proj.name?.trim() &&
         proj.description?.trim()?.length > 20 &&
         proj.technologies?.trim()
       ) {
-        validProjects++;
+        validProj++;
       }
     });
-    projScore = Math.min(validProjects * 5, 10);
-    breakdown.projects = projScore;
-    score += projScore;
+
+    score += Math.min(validProj * 5, 10);
   }
 
-  // Certifications (5 points)
-  if (resumeData.certifications?.length > 0) {
-    breakdown.certifications = 5;
+  /* ---------- CERTIFICATIONS (5) ---------- */
+
+  if (resumeData.certifications?.length) {
     score += 5;
   }
 
-  // Formatting (5 points) - Always award if data exists
-  if (resumeData.personalInfo && resumeData.experience?.length > 0) {
-    breakdown.formatting = 5;
+  /* ---------- FORMATTING BONUS (5) ---------- */
+
+  if (resumeData.personalInfo && resumeData.experience?.length) {
     score += 5;
   }
 
-  return {
-    score: Math.min(Math.round(score), 100),
-    breakdown,
-  };
+  return Math.min(Math.round(score), 100);
+};
+
+const isValidDate = (start, end, isCurrent) => {
+  if (!start) return false;
+  if (isCurrent) return true;
+  if (!end) return false;
+
+  const [sy, sm] = start.split("-").map(Number);
+  const [ey, em] = end.split("-").map(Number);
+
+  if (ey < sy) return false;
+  if (ey === sy && em <= sm) return false;
+
+  return true;
 };
 
 const validateDateSequence = (startDate, endDate, isCurrentRole) => {
@@ -152,6 +140,13 @@ export const getATSRecommendations = (resumeData) => {
   if (!resumeData.personalInfo?.location?.trim()) {
     recommendations.push({ type: "warning", text: "Add your location" });
   }
+  if (!resumeData.personalInfo?.designation?.trim()) {
+    recommendations.push({
+      type: "warning",
+      text: "Add a professional designation/job title to improve ATS matching",
+    });
+  }
+
   if (!resumeData.personalInfo?.summary?.trim()) {
     recommendations.push({
       type: "warning",

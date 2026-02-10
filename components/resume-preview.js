@@ -31,75 +31,78 @@ export default function ResumePreview({ data }) {
       className="max-w-4xl mx-auto bg-white shadow-sm rounded-md p-8 sm:p-12 text-slate-900 font-serif print:p-0"
       style={{ lineHeight: "1.25" }}
     >
-      <div className="mb-6 pb-4 border-b-2 border-slate-300">
-        <h1
-          className="text-2xl sm:text-3xl font-bold mb-2"
-          style={{ fontSize: "24px" }}
-        >
-          {data.personalInfo.fullName}
+      <div className="mb-6 pb-4 border-b-2 border-slate-300 text-center">
+        <h1 className="text-[26px] font-bold  text-slate-900">
+          {data.personalInfo.fullName?.toUpperCase()}
         </h1>
-        <div
-          className="flex flex-wrap gap-1 text-xs sm:text-sm text-slate-700 mb-2"
-          style={{ fontSize: "11px", lineHeight: "1.4" }}
-        >
-          {data.personalInfo.email && <span>{data.personalInfo.email}</span>}
+
+        {data.personalInfo.designation && (
+          <div className="text-[14px] font-semibold  text-slate-700 mt-1">
+            {data.personalInfo.designation.toUpperCase()}
+          </div>
+        )}
+
+        <div className="mt-2 text-[11px] text-slate-700 flex flex-wrap justify-center gap-1">
+          {data.personalInfo.location && (
+            <span>{data.personalInfo.location}</span>
+          )}
+
+          {data.personalInfo.email && (
+            <>
+              <span>|</span>
+              <span>{data.personalInfo.email}</span>
+            </>
+          )}
+
+          {data.personalInfo.linkedin && (
+            <>
+              <span>|</span>
+              <a
+                href={data.personalInfo.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline"
+              >
+                LinkedIn
+              </a>
+            </>
+          )}
+
+          {data.personalInfo.github && (
+            <>
+              <span>|</span>
+              <a
+                href={data.personalInfo.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline"
+              >
+                GitHub
+              </a>
+            </>
+          )}
+
+          {data.personalInfo.website && (
+            <>
+              <span>|</span>
+              <a
+                href={data.personalInfo.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline"
+              >
+                Portfolio
+              </a>
+            </>
+          )}
+
           {data.personalInfo.phone && (
             <>
               <span>|</span>
               <span>{data.personalInfo.phone}</span>
             </>
           )}
-          {data.personalInfo.location && (
-            <>
-              <span>|</span>
-              <span>{data.personalInfo.location}</span>
-            </>
-          )}
         </div>
-        {(data.personalInfo.linkedin ||
-          data.personalInfo.github ||
-          data.personalInfo.website) && (
-          <div
-            className="flex flex-wrap gap-1 text-xs sm:text-sm text-slate-700"
-            style={{ fontSize: "11px", lineHeight: "1.4" }}
-          >
-            {data.personalInfo.linkedin && (
-              <>
-                <span>LinkedIn:</span>
-                <a
-                  href={data.personalInfo.linkedin}
-                  className="text-blue-600 hover:underline"
-                >
-                  {data.personalInfo.linkedin}
-                </a>
-              </>
-            )}
-            {data.personalInfo.github && (
-              <>
-                <span>|</span>
-                <span>GitHub:</span>
-                <a
-                  href={data.personalInfo.github}
-                  className="text-blue-600 hover:underline"
-                >
-                  {data.personalInfo.github}
-                </a>
-              </>
-            )}
-            {data.personalInfo.website && (
-              <>
-                <span>|</span>
-                <span>Portfolio:</span>
-                <a
-                  href={data.personalInfo.website}
-                  className="text-blue-600 hover:underline"
-                >
-                  {data.personalInfo.website}
-                </a>
-              </>
-            )}
-          </div>
-        )}
       </div>
 
       {data.personalInfo.summary && (
@@ -138,7 +141,7 @@ export default function ResumePreview({ data }) {
                     {formatDateRange(
                       exp.startDate,
                       exp.endDate,
-                      exp.isCurrentRole
+                      exp.isCurrentRole,
                     )}
                   </span>
                 </div>
@@ -190,7 +193,7 @@ export default function ResumePreview({ data }) {
                     {formatDateRange(
                       edu.startDate,
                       edu.endDate,
-                      edu.isCurrentRole
+                      edu.isCurrentRole,
                     )}
                   </span>
                 </div>

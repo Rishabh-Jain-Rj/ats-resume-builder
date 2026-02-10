@@ -154,7 +154,7 @@ export default function Home() {
 
       {/* ATS Indicator - 2 columns */}
       <div className="lg:col-span-2">
-        <div className="cursor-pointer">
+        <div className="">
           <ATSIndicator
             resumeData={resumeData}
             onOpenDrawer={() => setShowATSDrawer(true)}

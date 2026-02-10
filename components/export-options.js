@@ -251,11 +251,40 @@ function generateHTMLContent(resumeData, font = "Calibri, Arial, sans-serif") {
         max-width: 820px;
       }
 
-      h1 {
-        font-size: 24px;
-        font-weight: bold;
-        margin: 0 0 4px 0;
-        padding: 0;
+
+      .resume-header {
+        text-align: center;
+        margin-bottom: 12px;
+      }
+
+      .resume-name {
+        font-size: 26px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        color: #0f172a;
+        margin: 0;
+      }
+
+      .resume-designation {
+        font-size: 15px;
+        font-weight: 600;
+        color: #0f172a;
+        margin-top: 3px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .resume-contact-line {
+        font-size: 11px;
+        color: #0f172a;
+        margin-top: 6px;
+        line-height: 1.4;
+      }
+
+      .resume-divider {
+        border: none;
+        border-top: 1px solid #cbd5e1;   /* slate-300 */
+        margin: 10px 0 14px 0;
       }
 
       h2 {
@@ -267,23 +296,6 @@ function generateHTMLContent(resumeData, font = "Calibri, Arial, sans-serif") {
         border-bottom: 1px solid #cbd5e1;
         letter-spacing: 0.5px;
         page-break-after: avoid;
-      }
-
-      .contact, .links {
-        font-size: 11px;
-        color: #334155;
-        margin: 0;
-        padding: 0;
-        line-height: 1.25;
-      }
-
-      .links {
-        margin-top: 2px;
-      }
-
-      .links a {
-        color: #2563eb;
-        text-decoration: none;
       }
 
       .summary {
@@ -388,11 +400,13 @@ function generateHTMLContent(resumeData, font = "Calibri, Arial, sans-serif") {
         line-height: 1.2;
       }
 
+      .resume-contact-line a,
       .project-link a {
-        color: #2563eb;
-        word-break: break-all;
-        text-decoration: none;
+        text-decoration:none;
+        font-weight: 500;
+        color: #0f172a;
       }
+
 
       .field {
         font-size: 12px;
@@ -441,40 +455,55 @@ function generateHTMLContent(resumeData, font = "Calibri, Arial, sans-serif") {
   </head>
 
   <body>
-    <!-- Header -->
-    <h1>${resumeData.personalInfo.fullName}</h1>
+    <div class="resume-header">
+      <h1 class="resume-name">
+        ${resumeData.personalInfo.fullName?.toUpperCase() || ""}
+      </h1>
 
-    <div class="contact">
-      ${resumeData.personalInfo.email || ""}
       ${
-        resumeData.personalInfo.phone
-          ? " | " + resumeData.personalInfo.phone
+        resumeData.personalInfo.designation
+          ? `<div class="resume-designation">
+              ${resumeData.personalInfo.designation.toUpperCase()}
+            </div>`
           : ""
       }
-      ${
-        resumeData.personalInfo.location
-          ? " | " + resumeData.personalInfo.location
-          : ""
-      }
+
+      <div class="resume-contact-line">
+        ${resumeData.personalInfo.location || ""}
+
+        ${
+          resumeData.personalInfo.email
+            ? ` | ${resumeData.personalInfo.email}`
+            : ""
+        }
+
+        ${
+          resumeData.personalInfo.linkedin
+            ? ` | <a href="${resumeData.personalInfo.linkedin}" target="_blank">LinkedIn</a>`
+            : ""
+        }
+
+        ${
+          resumeData.personalInfo.github
+            ? ` | <a href="${resumeData.personalInfo.github}" target="_blank">GitHub</a>`
+            : ""
+        }
+
+        ${
+          resumeData.personalInfo.website
+            ? ` | <a href="${resumeData.personalInfo.website}" target="_blank">Portfolio</a>`
+            : ""
+        }
+
+        ${
+          resumeData.personalInfo.phone
+            ? ` | ${resumeData.personalInfo.phone}`
+            : ""
+        }
+      </div>
     </div>
 
-    <div class="links">
-      ${
-        resumeData.personalInfo.linkedin
-          ? `LinkedIn: <a href="${resumeData.personalInfo.linkedin}" target="_blank" rel="noopener noreferrer">${resumeData.personalInfo.linkedin}</a>`
-          : ""
-      }
-      ${
-        resumeData.personalInfo.github
-          ? ` | GitHub: <a href="${resumeData.personalInfo.github}" target="_blank" rel="noopener noreferrer">${resumeData.personalInfo.github}</a>`
-          : ""
-      }
-      ${
-        resumeData.personalInfo.website
-          ? ` | Portfolio: <a href="${resumeData.personalInfo.website}" target="_blank" rel="noopener noreferrer">${resumeData.personalInfo.website}</a>`
-          : ""
-      }
-    </div>
+<hr class="resume-divider" />
 
     <!-- Summary -->
     ${
@@ -495,12 +524,12 @@ function generateHTMLContent(resumeData, font = "Calibri, Arial, sans-serif") {
                 <div class="entry-header">
                   <div class="entry-title">${exp.position}</div>
                   <div class="entry-date">${formatDate(exp.startDate)} — ${
-                exp.isCurrentRole ? "Present" : formatDate(exp.endDate)
-              }</div>
+                    exp.isCurrentRole ? "Present" : formatDate(exp.endDate)
+                  }</div>
                 </div>
                 <div class="entry-subtitle">${exp.company}${
-                exp.location ? " | " + exp.location : ""
-              }</div>
+                  exp.location ? " | " + exp.location : ""
+                }</div>
                 ${
                   exp.bullets?.length
                     ? exp.bullets
@@ -510,13 +539,13 @@ function generateHTMLContent(resumeData, font = "Calibri, Arial, sans-serif") {
                       <span class="bullet">•</span>
                       <span class="bullet-text">${b}</span>
                     </div>
-                  `
+                  `,
                         )
                         .join("")
                     : ""
                 }
               </div>
-            `
+            `,
             )
             .join("")}`
         : ""
@@ -533,14 +562,14 @@ function generateHTMLContent(resumeData, font = "Calibri, Arial, sans-serif") {
                 <div class="entry-header">
                   <div class="entry-title">${edu.degree}</div>
                   <div class="entry-date">${formatDate(edu.startDate)} — ${
-                edu.isCurrentRole ? "Present" : formatDate(edu.endDate)
-              }</div>
+                    edu.isCurrentRole ? "Present" : formatDate(edu.endDate)
+                  }</div>
                 </div>
                 <div class="entry-subtitle">${edu.school}</div>
                 ${edu.field ? `<div class="field">${edu.field}</div>` : ""}
                 ${edu.score ? `<div class="score">${edu.score}</div>` : ""}
               </div>
-            `
+            `,
             )
             .join("")}`
         : ""
@@ -567,7 +596,7 @@ function generateHTMLContent(resumeData, font = "Calibri, Arial, sans-serif") {
                     : ""
                 }
               </div>
-              `
+              `,
             )
             .join("")}`
         : ""
@@ -587,7 +616,7 @@ function generateHTMLContent(resumeData, font = "Calibri, Arial, sans-serif") {
               </div>
               <div class="entry-subtitle">${cert.issuer}</div>
             </div>
-          `
+          `,
             )
             .join("")}`
         : ""
@@ -602,7 +631,7 @@ function generateHTMLContent(resumeData, font = "Calibri, Arial, sans-serif") {
               ([category, list]) => `
               <div class="skills-category">${category}</div>
               <div class="skills-list">${list.join(", ")}</div>
-            `
+            `,
             )
             .join("")}`
         : ""
