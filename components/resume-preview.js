@@ -119,6 +119,35 @@ export default function ResumePreview({ data }) {
         </div>
       )}
 
+      {data.skills && data.skills.length > 0 && (
+        <div className="mb-6">
+          <h2
+            className="text-sm font-bold uppercase tracking-wide mb-3 border-b border-slate-300 pb-1 "
+            style={{ fontSize: "14px", fontWeight: "bold" }}
+          >
+            Skills
+          </h2>
+          <div className="space-y-2">
+            {Object.entries(skillsByCategory).map(([category, skills]) => (
+              <div key={category}>
+                <p
+                  className="text-xs font-bold text-slate-900 print:font-bold"
+                  style={{ fontSize: "12px", fontWeight: "bold" }}
+                >
+                  {category}
+                </p>
+                <p
+                  className="text-sm text-slate-700"
+                  style={{ fontSize: "12px" }}
+                >
+                  {skills.join(", ")}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {data.experience && data.experience.length > 0 && (
         <div className="mb-6">
           <h2
@@ -164,6 +193,57 @@ export default function ResumePreview({ data }) {
                       </li>
                     ))}
                   </ul>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {data.projects && data.projects.length > 0 && (
+        <div className="mb-6">
+          <h2
+            className="text-sm font-bold uppercase tracking-wide mb-3 border-b border-slate-300 pb-1"
+            style={{ fontSize: "14px", fontWeight: "bold" }}
+          >
+            Projects
+          </h2>
+          <div className="space-y-4">
+            {data.projects.map((project, idx) => (
+              <div key={idx}>
+                <h3 className="font-bold" style={{ fontSize: "13.5px" }}>
+                  {project.name}
+                </h3>
+                <p
+                  className="leading-relaxed"
+                  style={{ fontSize: "12px", lineHeight: "1.3" }}
+                >
+                  {project.description}
+                </p>
+                {project.technologies && (
+                  <p
+                    className="text-xs text-slate-700 mt-1"
+                    style={{ fontSize: "11px" }}
+                  >
+                    <span className="font-semibold">Technologies:</span>{" "}
+                    {project.technologies}
+                  </p>
+                )}
+                {project.link && (
+                  <p
+                    className="text-xs text-slate-700 mt-1"
+                    style={{ fontSize: "11px" }}
+                  >
+                    <span className="font-semibold">Live Demo:</span>{" "}
+                    <a
+                      href={project.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
+                    >
+                      {project.link}
+                    </a>
+                  </p>
                 )}
               </div>
             ))}
@@ -225,59 +305,8 @@ export default function ResumePreview({ data }) {
         </div>
       )}
 
-      {data.projects && data.projects.length > 0 && (
-        <div className="mb-6">
-          <h2
-            className="text-sm font-bold uppercase tracking-wide mb-3 border-b border-slate-300 pb-1"
-            style={{ fontSize: "14px", fontWeight: "bold" }}
-          >
-            Projects
-          </h2>
-          <div className="space-y-4">
-            {data.projects.map((project, idx) => (
-              <div key={idx}>
-                <h3 className="font-bold" style={{ fontSize: "13.5px" }}>
-                  {project.name}
-                </h3>
-                <p
-                  className="leading-relaxed"
-                  style={{ fontSize: "12px", lineHeight: "1.3" }}
-                >
-                  {project.description}
-                </p>
-                {project.technologies && (
-                  <p
-                    className="text-xs text-slate-700 mt-1"
-                    style={{ fontSize: "11px" }}
-                  >
-                    <span className="font-semibold">Technologies:</span>{" "}
-                    {project.technologies}
-                  </p>
-                )}
-                {project.link && (
-                  <p
-                    className="text-xs text-slate-700 mt-1"
-                    style={{ fontSize: "11px" }}
-                  >
-                    <span className="font-semibold">Live Demo:</span>{" "}
-                    <a
-                      href={project.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline"
-                    >
-                      {project.link}
-                    </a>
-                  </p>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
       {data.certifications && data.certifications.length > 0 && (
-        <div className="mb-6">
+        <div>
           <h2
             className="text-sm font-bold uppercase tracking-wide mb-3 border-b border-slate-300 pb-1"
             style={{ fontSize: "14px", fontWeight: "bold" }}
@@ -309,35 +338,6 @@ export default function ResumePreview({ data }) {
                     {formatDate(cert.date)}
                   </span>
                 )}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {data.skills && data.skills.length > 0 && (
-        <div>
-          <h2
-            className="text-sm font-bold uppercase tracking-wide mb-3 border-b border-slate-300 pb-1"
-            style={{ fontSize: "14px", fontWeight: "bold" }}
-          >
-            Skills
-          </h2>
-          <div className="space-y-2">
-            {Object.entries(skillsByCategory).map(([category, skills]) => (
-              <div key={category}>
-                <p
-                  className="text-xs font-bold text-slate-900 print:font-bold"
-                  style={{ fontSize: "12px", fontWeight: "bold" }}
-                >
-                  {category}
-                </p>
-                <p
-                  className="text-sm text-slate-700"
-                  style={{ fontSize: "12px" }}
-                >
-                  {skills.join(", ")}
-                </p>
               </div>
             ))}
           </div>

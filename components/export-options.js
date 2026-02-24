@@ -513,6 +513,21 @@ function generateHTMLContent(resumeData, font = "Calibri, Arial, sans-serif") {
         : ""
     }
 
+    <!-- Skills -->
+    ${
+      resumeData.skills?.length
+        ? `<h2>Skills</h2>
+          ${Object.entries(skillsByCategory)
+            .map(
+              ([category, list]) => `
+              <div class="skills-category">${category}</div>
+              <div class="skills-list">${list.join(", ")}</div>
+            `,
+            )
+            .join("")}`
+        : ""
+    }
+
     <!-- Work Experience -->
     ${
       resumeData.experience?.length
@@ -551,30 +566,6 @@ function generateHTMLContent(resumeData, font = "Calibri, Arial, sans-serif") {
         : ""
     }
 
-    <!-- Education -->
-    ${
-      resumeData.education?.length
-        ? `<h2>Education</h2>
-          ${resumeData.education
-            .map(
-              (edu) => `
-              <div class="entry">
-                <div class="entry-header">
-                  <div class="entry-title">${edu.degree}</div>
-                  <div class="entry-date">${formatDate(edu.startDate)} — ${
-                    edu.isCurrentRole ? "Present" : formatDate(edu.endDate)
-                  }</div>
-                </div>
-                <div class="entry-subtitle">${edu.school}</div>
-                ${edu.field ? `<div class="field">${edu.field}</div>` : ""}
-                ${edu.score ? `<div class="score">${edu.score}</div>` : ""}
-              </div>
-            `,
-            )
-            .join("")}`
-        : ""
-    }
-
     <!-- Projects -->
     ${
       resumeData.projects?.length
@@ -602,6 +593,33 @@ function generateHTMLContent(resumeData, font = "Calibri, Arial, sans-serif") {
         : ""
     }
 
+    
+    <!-- Education -->
+    ${
+      resumeData.education?.length
+        ? `<h2>Education</h2>
+          ${resumeData.education
+            .map(
+              (edu) => `
+              <div class="entry">
+                <div class="entry-header">
+                  <div class="entry-title">${edu.degree}</div>
+                  <div class="entry-date">${formatDate(edu.startDate)} — ${
+                    edu.isCurrentRole ? "Present" : formatDate(edu.endDate)
+                  }</div>
+                </div>
+                <div class="entry-subtitle">${edu.school}</div>
+                ${edu.field ? `<div class="field">${edu.field}</div>` : ""}
+                ${edu.score ? `<div class="score">${edu.score}</div>` : ""}
+              </div>
+            `,
+            )
+            .join("")}`
+        : ""
+    }
+
+
+
     <!-- Certifications -->
     ${
       resumeData.certifications?.length
@@ -622,20 +640,7 @@ function generateHTMLContent(resumeData, font = "Calibri, Arial, sans-serif") {
         : ""
     }
 
-    <!-- Skills -->
-    ${
-      resumeData.skills?.length
-        ? `<h2>Skills</h2>
-          ${Object.entries(skillsByCategory)
-            .map(
-              ([category, list]) => `
-              <div class="skills-category">${category}</div>
-              <div class="skills-list">${list.join(", ")}</div>
-            `,
-            )
-            .join("")}`
-        : ""
-    }
+
 
   </body>
   </html>
